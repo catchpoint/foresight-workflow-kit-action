@@ -5,13 +5,7 @@ import * as core from '@actions/core';
 import { Octokit } from '@octokit/action';
 import * as github from '@actions/github';
 import {
-  CPUStats, DiskStats, GraphResponse,
-  JobInfo, LineGraphOptions,
-  MemoryStats, NetworkStats,
-  ProcessedCPUStats, ProcessedDiskStats,
-  ProcessedMemoryStats,
-  ProcessedNetworkStats,
-  ProcessedStats, StackedAreaGraphOptions
+  JobInfo
 } from './interfaces';
 import * as logger from './logger';
 import { createCITelemetryData, saveJobInfos } from './utils';
