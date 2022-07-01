@@ -160,11 +160,11 @@ function collectDiskStats(
 
       const points: Point[] = [
         {
-          name: "network.io.rxMb",
+          name: "disk.io.rxMb",
           value: Math.floor((rxSec * (timeInterval / 1000)) / 1024 / 1024)
         },
         {
-          name: "network.io.wxMb",
+          name: "disk.io.wxMb",
           value: Math.floor((wxSec * (timeInterval / 1000)) / 1024 / 1024)
         }
       ]

@@ -31502,11 +31502,11 @@ function collectDiskStats(statTime, timeInterval) {
         let wxSec = data.wx_sec ? data.wx_sec : 0;
         const points = [
             {
-                name: "network.io.rxMb",
+                name: "disk.io.rxMb",
                 value: Math.floor((rxSec * (timeInterval / 1000)) / 1024 / 1024)
             },
             {
-                name: "network.io.wxMb",
+                name: "disk.io.wxMb",
                 value: Math.floor((wxSec * (timeInterval / 1000)) / 1024 / 1024)
             }
         ];
