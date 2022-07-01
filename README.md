@@ -1,4 +1,4 @@
-# workflow-telemetry-action
+# foresight-workflow-kit-action
 
 A GitHub Action to track and monitor the resource metrics of your GitHub Action workflow runs. If the run is triggered via a Pull Request, it will create a comment on the connected PR with the results and/or publishes the results to the job summary. The action collects the following metrics:
 
@@ -19,7 +19,7 @@ To use the action, add the following step before the steps you want to track.
 
 ```yaml
 - name: Collect Workflow Telemetry
-  uses: thundra-io/workflow-telemetry-action@v1
+  uses: thundra-io/foresight-workflow-kit-action@v1
 ```
 
 ## Configuration

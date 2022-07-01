@@ -1,5 +1,5 @@
 {
-  "name": "workflow-telemetry-action",
+  "name": "foresight-workflow-kit-action",
   "version": "0.0.0",
   "private": true,
   "description": "Workflow Telemetry Action",
@@ -18,7 +18,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/thundra-io/workflow-telemetry-action.git"
+    "url": "git+https://github.com/thundra-io/foresight-workflow-kit-action.git"
   },
   "keywords": [
     "actions",
