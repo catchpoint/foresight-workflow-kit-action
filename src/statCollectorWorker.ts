@@ -2,11 +2,9 @@ import { createServer, IncomingMessage, Server, ServerResponse } from 'http'
 import si from 'systeminformation'
 import * as logger from './logger'
 import {
-  CPUStats,
-  MemoryStats,
-  DiskStats,
-  NetworkStats,
-  TelemetryDatum,
+  MetricStats,
+  Point,
+  MetricTelemetryDatum,
 } from './interfaces'
 import { WORKFLOW_TELEMETRY_VERSIONS } from './utils'
 
@@ -18,14 +16,18 @@ const SERVER_PORT: number = parseInt(process.env.WORKFLOW_TELEMETRY_SERVER_PORT 
 let expectedScheduleTime: number = 0
 let statCollectTime: number = 0
 
-const metricTelemetryData: TelemetryDatum[] = []
+const metricStatsData: MetricStats[] = []
+
+const metricTelemetryData: MetricTelemetryDatum = {
+  "type": "Metric",
+  "version": WORKFLOW_TELEMETRY_VERSIONS.METRIC,
+  "data": metricStatsData
+}
 
 ///////////////////////////
 
 // CPU Stats             //
 ///////////////////////////
-
-const cpuStatsHistogram: CPUStats[] = []
 
 function collectCPUStats(
     statTime: number,
@@ -34,14 +36,27 @@ function collectCPUStats(
   return si
       .currentLoad()
       .then((data: si.Systeminformation.CurrentLoadData) => {
-        const cpuStats: CPUStats = {
-          metricName: "CPU Load",
+        const points: Point[] = [
+          {
+            name: "cpu.load.total",
+            value: data.currentLoad
+          },
+          {
+            name: "cpu.load.user",
+            value: data.currentLoadUser
+          },
+          {
+            name: "cpu.load.system",
+            value: data.currentLoadSystem
+          }
+        ]
+        const cpuStats: MetricStats = {
+          domain: "cpu",
+          group: "cpu.load",
           time: statTime,
-          totalLoad: data.currentLoad,
-          userLoad: data.currentLoadUser,
-          systemLoad: data.currentLoadSystem
+          points: points
         }
-        cpuStatsHistogram.push(cpuStats)
+        metricTelemetryData.data.push(cpuStats)
       })
       .catch((error: any) => {
         logger.error(error)
@@ -53,8 +68,6 @@ function collectCPUStats(
 // Memory Stats          //
 ///////////////////////////
 
-const memoryStatsHistogram: MemoryStats[] = []
-
 function collectMemoryStats(
     statTime: number,
     timeInterval: number
@@ -62,14 +75,27 @@ function collectMemoryStats(
   return si
       .mem()
       .then((data: si.Systeminformation.MemData) => {
-        const memoryStats: MemoryStats = {
-          metricName: "Memory Usage",
+        const points: Point[] = [
+          {
+            name: "memory.usage.total",
+            value: data.total / 1024 / 1024
+          },
+          {
+            name: "memory.usage.active",
+            value: data.active / 1024 / 1024
+          },
+          {
+            name: "memory.usage.available",
+            value: data.available / 1024 / 1024
+          }
+        ]
+        const memoryStats: MetricStats = {
+          domain: "memory",
+          group: "memory.usage",
           time: statTime,
-          totalMemoryMb: data.total / 1024 / 1024,
-          activeMemoryMb: data.active / 1024 / 1024,
-          availableMemoryMb: data.available / 1024 / 1024
+          points: points
         }
-        memoryStatsHistogram.push(memoryStats)
+        metricTelemetryData.data.push(memoryStats)
       })
       .catch((error: any) => {
         logger.error(error)
@@ -80,8 +106,6 @@ function collectMemoryStats(
 
 // Network Stats         //
 ///////////////////////////
-
-const networkStatsHistogram: NetworkStats[] = []
 
 function collectNetworkStats(
   statTime: number,
@@ -96,13 +120,23 @@ function collectNetworkStats(
         totalRxSec += nsd.rx_sec
         totalTxSec += nsd.tx_sec
       }
-      const networkStats: NetworkStats = {
-        metricName: "Network I/O",
+      const points: Point[] = [
+        {
+          name: "network.io.rxMb",
+          value: Math.floor((totalRxSec * (timeInterval / 1000)) / 1024 / 1024)
+        },
+        {
+          name: "network.io.txMb",
+          value: Math.floor((totalTxSec * (timeInterval / 1000)) / 1024 / 1024)
+        }
+      ]
+      const networkStats: MetricStats = {
+        domain: "network",
+        group: "network.io",
         time: statTime,
-        rxMb: Math.floor((totalRxSec * (timeInterval / 1000)) / 1024 / 1024),
-        txMb: Math.floor((totalTxSec * (timeInterval / 1000)) / 1024 / 1024)
+        points: points
       }
-      networkStatsHistogram.push(networkStats)
+      metricTelemetryData.data.push(networkStats)
     })
     .catch((error: any) => {
       logger.error(error)
@@ -114,8 +148,6 @@ function collectNetworkStats(
 // Disk Stats            //
 ///////////////////////////
 
-const diskStatsHistogram: DiskStats[] = []
-
 function collectDiskStats(
   statTime: number,
   timeInterval: number
@@ -125,13 +157,24 @@ function collectDiskStats(
     .then((data: si.Systeminformation.FsStatsData) => {
       let rxSec = data.rx_sec ? data.rx_sec : 0
       let wxSec = data.wx_sec ? data.wx_sec : 0
-      const diskStats: DiskStats = {
-        metricName: "Disk I/O",
+
+      const points: Point[] = [
+        {
+          name: "network.io.rxMb",
+          value: Math.floor((rxSec * (timeInterval / 1000)) / 1024 / 1024)
+        },
+        {
+          name: "network.io.wxMb",
+          value: Math.floor((wxSec * (timeInterval / 1000)) / 1024 / 1024)
+        }
+      ]
+      const diskStats: MetricStats = {
+        domain: "disk",
+        group: "disk.io",
         time: statTime,
-        rxMb: Math.floor((rxSec * (timeInterval / 1000)) / 1024 / 1024),
-        wxMb: Math.floor((wxSec * (timeInterval / 1000)) / 1024 / 1024)
+        points: points
       }
-      diskStatsHistogram.push(diskStats)
+      metricTelemetryData.data.push(diskStats)
     })
     .catch((error: any) => {
       logger.error(error)
@@ -139,49 +182,6 @@ function collectDiskStats(
 }
 
 ///////////////////////////
-
-async function collectMetrics() {
-  try {
-    for(const cpuStats of cpuStatsHistogram) {
-      const cpuMetric: TelemetryDatum = {
-        type: "Metric",
-        version: WORKFLOW_TELEMETRY_VERSIONS.METRIC,
-        data: cpuStats
-      }
-      metricTelemetryData.push(cpuMetric);
-    }
-
-    for(const memoryStats of memoryStatsHistogram) {
-      const memoryMetric: TelemetryDatum = {
-        type: "Metric",
-        version: WORKFLOW_TELEMETRY_VERSIONS.METRIC,
-        data: memoryStats
-      }
-      metricTelemetryData.push(memoryMetric);
-    }
-
-    for(const networkStats of networkStatsHistogram) {
-      const networkMetric: TelemetryDatum = {
-        type: "Metric",
-        version: WORKFLOW_TELEMETRY_VERSIONS.METRIC,
-        data: networkStats
-      }
-      metricTelemetryData.push(networkMetric);
-    }
-
-
-    for(const diskStats of diskStatsHistogram) {
-      const diskMetric: TelemetryDatum = {
-        type: "Metric",
-        version: WORKFLOW_TELEMETRY_VERSIONS.METRIC,
-        data: diskStats
-      }
-      metricTelemetryData.push(diskMetric);
-    }
-  } catch(err: any) {
-    logger.debug(`Couldn't retrieve metrics data to send!`);
-  }
-}
 
 async function collectStats(triggeredFromScheduler: boolean = true) {
   try {
@@ -213,42 +213,6 @@ function startHttpServer() {
     async (request: IncomingMessage, response: ServerResponse) => {
       try {
         switch (request.url) {
-          case '/cpu': {
-            if (request.method === 'GET') {
-              response.end(JSON.stringify(cpuStatsHistogram))
-            } else {
-              response.statusCode = 405
-              response.end()
-            }
-            break
-          }
-          case '/memory': {
-            if (request.method === 'GET') {
-              response.end(JSON.stringify(memoryStatsHistogram))
-            } else {
-              response.statusCode = 405
-              response.end()
-            }
-            break
-          }
-          case '/network': {
-            if (request.method === 'GET') {
-              response.end(JSON.stringify(networkStatsHistogram))
-            } else {
-              response.statusCode = 405
-              response.end()
-            }
-            break
-          }
-          case '/disk': {
-            if (request.method === 'GET') {
-              response.end(JSON.stringify(diskStatsHistogram))
-            } else {
-              response.statusCode = 405
-              response.end()
-            }
-            break
-          }
           case '/collect': {
             if (request.method === 'POST') {
               await collectStats(false)
@@ -261,7 +225,6 @@ function startHttpServer() {
           }
           case '/metrics': {
             if (request.method === 'GET') {
-              await collectMetrics()
               response.end(JSON.stringify(metricTelemetryData))
             } else {
               response.statusCode = 405

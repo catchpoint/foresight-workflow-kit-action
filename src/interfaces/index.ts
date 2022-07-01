@@ -21,38 +21,29 @@ export interface CITelemetryData {
  
 export interface TelemetryDatum {
     readonly version: string
-    readonly data: Object
     readonly type: string
 }
 
+export interface MetricTelemetryDatum extends TelemetryDatum {
+    readonly data: MetricStats[]
+}
+
+
+export interface ProcessTelemetryDatum extends TelemetryDatum {
+    readonly data: Object
+}
+
 export interface MetricStats {
+    readonly domain: string
+    readonly group: string
     readonly time: number
-    readonly metricName: string
+    readonly points: Point[] | undefined
 }
 
-export interface CPUStats extends MetricStats {
-    readonly totalLoad: number
-    readonly userLoad: number
-    readonly systemLoad: number
+export interface Point {
+    readonly name: string
+    readonly value: Object
 }
-
-export interface MemoryStats extends MetricStats {
-    readonly totalMemoryMb: number
-    readonly activeMemoryMb: number
-    readonly availableMemoryMb: number
-}
-
-export interface NetworkStats extends MetricStats {
-    readonly rxMb: number
-    readonly txMb: number
-}
-
-export interface DiskStats extends MetricStats {
-    readonly time: number
-    readonly rxMb: number
-    readonly wxMb: number
-}
-
 
 export interface CompletedCommand {
     readonly ts: string,

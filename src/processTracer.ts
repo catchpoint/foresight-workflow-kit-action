@@ -2,9 +2,8 @@ import { ChildProcess, spawn, exec } from 'child_process';
 import path from 'path';
 import * as core from '@actions/core';
 import si from 'systeminformation'
-import { sprintf } from 'sprintf-js';
 import { parse } from './procTraceParser';
-import { CompletedCommand, TelemetryDatum } from "./interfaces";
+import { CompletedCommand, ProcessTelemetryDatum } from "./interfaces";
 import * as logger from './logger';
 import { createCITelemetryData, WORKFLOW_TELEMETRY_VERSIONS } from './utils';
 
@@ -117,9 +116,9 @@ export async function report(): Promise<void> {
                 traceSystemProcesses: traceSysProcs
             })
 
-        const processInfos: TelemetryDatum[] = []
+        const processInfos: ProcessTelemetryDatum[] = []
         for (let command of completedCommands) {
-            let processTelemetryDatum: TelemetryDatum = {
+            let processTelemetryDatum: ProcessTelemetryDatum = {
                 type: "Process",
                 data: command,
                 version: WORKFLOW_TELEMETRY_VERSIONS.PROCESS
@@ -136,7 +135,7 @@ export async function report(): Promise<void> {
 }
 
 
-async function sendProcessData(processInfos: TelemetryDatum[]): Promise<void> {
+async function sendProcessData(processInfos: ProcessTelemetryDatum[]): Promise<void> {
     logger.info(`Send process result ...`)
     try {
         const ciTelemetryData = createCITelemetryData(processInfos);
