@@ -1,11 +1,28 @@
-name: 'Your name here'
-description: 'Provide a description here'
-author: 'Your name or organization here'
+name: "Workflow Telemetry"
+description: "Workflow Telemetry"
+author: "Serkan Özal <serkan@thundra.io>"
 inputs:
-  milliseconds: # change this
-    required: true
-    description: 'input description here'
-    default: 'default value if applicable'
+  github_token:
+    description: "GitHub API Access Token"
+    default: ${{ github.token }}
+    required: false
+  stat_frequency:
+    description: "Statistic collection frequency in seconds. Must be a number. Defaults to '5'."
+    default: 5
+    required: false
+  min_proc_duration:
+    description: "Minimum duration value in milliseconds to trace processes. Must be a number. Defaults to '-1' (no min value)."
+    default: -1
+    required: false
+  trace_sys_procs:
+    description: "Enables tracing default system processes ('aws', 'cat', 'sed', ...). Defaults to 'false'."
+    default: 'false'
+    required: false
+
 runs:
-  using: 'node16'
-  main: 'dist/index.js'
+  using: "node12"
+  main: dist/main/index.js
+  post: dist/post/index.js
+branding:
+  icon: "activity"
+  color: "yellow"
