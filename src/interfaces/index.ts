@@ -16,7 +16,7 @@ export interface MetaData {
 
 export interface CITelemetryData {
     readonly metaData: MetaData;
-    readonly telemetryData: TelemetryDatum[]
+    readonly telemetryData: TelemetryDatum
 }
  
 export interface TelemetryDatum {
@@ -30,7 +30,7 @@ export interface MetricTelemetryDatum extends TelemetryDatum {
 
 
 export interface ProcessTelemetryDatum extends TelemetryDatum {
-    readonly data: Object
+    readonly data: CompletedCommand[]
 }
 
 export interface MetricStats {

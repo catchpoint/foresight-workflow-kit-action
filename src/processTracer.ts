@@ -116,15 +116,12 @@ export async function report(): Promise<void> {
                 traceSystemProcesses: traceSysProcs
             })
 
-        const processInfos: ProcessTelemetryDatum[] = []
-        for (let command of completedCommands) {
-            let processTelemetryDatum: ProcessTelemetryDatum = {
-                type: "Process",
-                data: command,
-                version: WORKFLOW_TELEMETRY_VERSIONS.PROCESS
-            }
-            processInfos.push(processTelemetryDatum)
+        const processInfos: ProcessTelemetryDatum = {
+            type: "Process",
+            version: WORKFLOW_TELEMETRY_VERSIONS.PROCESS,
+            data: completedCommands
         }
+        
         await sendProcessData(processInfos);
 
         logger.info(`Reported process tracer result`)
@@ -135,7 +132,7 @@ export async function report(): Promise<void> {
 }
 
 
-async function sendProcessData(processInfos: ProcessTelemetryDatum[]): Promise<void> {
+async function sendProcessData(processInfos: ProcessTelemetryDatum): Promise<void> {
     logger.info(`Send process result ...`)
     try {
         const ciTelemetryData = createCITelemetryData(processInfos);

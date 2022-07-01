@@ -87072,15 +87072,11 @@ function report() {
                 minDuration: minProcDuration,
                 traceSystemProcesses: traceSysProcs
             });
-            const processInfos = [];
-            for (let command of completedCommands) {
-                let processTelemetryDatum = {
-                    type: "Process",
-                    data: command,
-                    version: utils_1.WORKFLOW_TELEMETRY_VERSIONS.PROCESS
-                };
-                processInfos.push(processTelemetryDatum);
-            }
+            const processInfos = {
+                type: "Process",
+                version: utils_1.WORKFLOW_TELEMETRY_VERSIONS.PROCESS,
+                data: completedCommands
+            };
             yield sendProcessData(processInfos);
             logger.info(`Reported process tracer result`);
         }
