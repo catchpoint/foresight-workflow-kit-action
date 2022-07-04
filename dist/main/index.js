@@ -87268,6 +87268,26 @@ function sendMetricData(port) {
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`);
             }
+            try {
+                const { data } = yield axios_1.default.post('https://foresight.service.thundra.me/api/v1/telemetry/metrics', ciTelemetryData, {
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'ApiKey 6327942a-36ff-40a5-a840-98e71cc2af7e'
+                    },
+                });
+                console.log(JSON.stringify(data, null, 4));
+            }
+            catch (error) {
+                if (axios_1.default.isAxiosError(error)) {
+                    console.log('error message: ', error.message);
+                    // 👇️ error: AxiosError<any, any>
+                    logger.error(error.message);
+                }
+                else {
+                    console.log('unexpected error: ', error);
+                    logger.error(`unexpected error: ${error}`);
+                }
+            }
         }
         catch (error) {
             logger.error('Unable to send stat collector result');
