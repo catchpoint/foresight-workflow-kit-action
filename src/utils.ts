@@ -11,7 +11,7 @@ export const WORKFLOW_TELEMETRY_VERSIONS = {
     PROCESS: "v1"
 };
 
-const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight.service.thundra.${process.env["WORKFLOW_TELEMETRY_STAGE"] || 'io'}/api/`
+const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight.service.thundra.${process.env["WORKFLOW_TELEMETRY_DOMAIN"] || 'io'}/api/`
 
 export const WORKFLOW_TELEMETRY_ENDPOINTS = {
     METRIC: `${WORKFLOW_TELEMETRY_BASE_URL}${WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/metrics`,
