@@ -2,12 +2,20 @@ import * as logger from './logger';
 import * as core from '@actions/core'
 import { CITelemetryData, JobInfo, MetaData, ProcessTelemetryDatum, TelemetryDatum } from './interfaces';
 import * as github from '@actions/github';
+import axios from 'axios';
 
 export const WORKFLOW_TELEMETRY_SERVER_PORT = "WORKFLOW_TELEMETRY_SERVER_PORT";
 
 export const WORKFLOW_TELEMETRY_VERSIONS = {
     METRIC: "v1",
     PROCESS: "v1"
+};
+
+const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight.service.thundra.${process.env["WORKFLOW_TELEMETRY_STAGE"] || 'io'}/api/`
+
+export const WORKFLOW_TELEMETRY_ENDPOINTS = {
+    METRIC: `${WORKFLOW_TELEMETRY_BASE_URL}${WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/metrics`,
+    PROCESS: `${WORKFLOW_TELEMETRY_BASE_URL}${WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/process`
 };
 
 export const JOB_STATES_NAME = {
@@ -62,4 +70,32 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
         metaData: getMetaData(),
         telemetryData: telemetryData
     }
+}
+
+export async function sendData (url :string, ciTelemetryData: CITelemetryData)
+{
+    logger.debug(`Send data url: ${url}`);
+    try {
+        const { data } = await axios.post(
+          url,
+          ciTelemetryData,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'ApiKey 6327942a-36ff-40a5-a840-98e71cc2af7e'
+            },
+          },
+        );
+    
+        console.log(JSON.stringify(data, null, 4));
+      } catch (error) {
+        if (axios.isAxiosError(error)) {
+          console.log('error message: ', error.message);
+          // 👇️ error: AxiosError<any, any>
+          logger.error(error.message);
+        } else {
+          console.log('unexpected error: ', error);
+          logger.error(`unexpected error: ${error}`)
+        }
+      }
 }

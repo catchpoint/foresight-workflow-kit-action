@@ -5,7 +5,7 @@ import si from 'systeminformation'
 import { parse } from './procTraceParser';
 import { CompletedCommand, ProcessTelemetryDatum } from "./interfaces";
 import * as logger from './logger';
-import { createCITelemetryData, WORKFLOW_TELEMETRY_VERSIONS } from './utils';
+import { createCITelemetryData, sendData, WORKFLOW_TELEMETRY_ENDPOINTS, WORKFLOW_TELEMETRY_VERSIONS } from './utils';
 
 const PROC_TRACER_PID_KEY: string = 'PROC_TRACER_PID'
 const PROC_TRACER_OUTPUT_FILE_NAME: string = 'proc-trace.out'
@@ -139,6 +139,7 @@ async function sendProcessData(processInfos: ProcessTelemetryDatum): Promise<voi
         if (logger.isDebugEnabled()) {
             logger.debug(`Sent process data: ${JSON.stringify(ciTelemetryData)}`)
         }
+        sendData(WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData);
     } catch (error: any) {
       logger.error('Unable to send process result')
       logger.error(error)

@@ -87095,6 +87095,7 @@ function sendProcessData(processInfos) {
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent process data: ${JSON.stringify(ciTelemetryData)}`);
             }
+            (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData);
         }
         catch (error) {
             logger.error('Unable to send process result');
@@ -87274,26 +87275,7 @@ function sendMetricData(port) {
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`);
             }
-            try {
-                const { data } = yield axios_1.default.post('https://foresight.service.thundra.me/api/v1/telemetry/metrics', ciTelemetryData, {
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': 'ApiKey 6327942a-36ff-40a5-a840-98e71cc2af7e'
-                    },
-                });
-                console.log(JSON.stringify(data, null, 4));
-            }
-            catch (error) {
-                if (axios_1.default.isAxiosError(error)) {
-                    console.log('error message: ', error.message);
-                    // 👇️ error: AxiosError<any, any>
-                    logger.error(error.message);
-                }
-                else {
-                    console.log('unexpected error: ', error);
-                    logger.error(`unexpected error: ${error}`);
-                }
-            }
+            (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData);
         }
         catch (error) {
             logger.error('Unable to send stat collector result');
@@ -87343,15 +87325,24 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.createCITelemetryData = exports.saveJobInfos = exports.setServerPort = exports.JOB_STATES_NAME = exports.WORKFLOW_TELEMETRY_VERSIONS = exports.WORKFLOW_TELEMETRY_SERVER_PORT = void 0;
+exports.sendData = exports.createCITelemetryData = exports.saveJobInfos = exports.setServerPort = exports.JOB_STATES_NAME = exports.WORKFLOW_TELEMETRY_ENDPOINTS = exports.WORKFLOW_TELEMETRY_VERSIONS = exports.WORKFLOW_TELEMETRY_SERVER_PORT = void 0;
 const logger = __importStar(__webpack_require__(4636));
 const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
+const axios_1 = __importDefault(__webpack_require__(6545));
 exports.WORKFLOW_TELEMETRY_SERVER_PORT = "WORKFLOW_TELEMETRY_SERVER_PORT";
 exports.WORKFLOW_TELEMETRY_VERSIONS = {
     METRIC: "v1",
     PROCESS: "v1"
+};
+const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight.service.thundra.${process.env["WORKFLOW_TELEMETRY_STAGE"] || 'io'}/api/`;
+exports.WORKFLOW_TELEMETRY_ENDPOINTS = {
+    METRIC: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/metrics`,
+    PROCESS: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/process`
 };
 exports.JOB_STATES_NAME = {
     FORESIGHT_WORKFLOW_JOB_ID: "FORESIGHT_WORKFLOW_JOB_ID",
@@ -87405,6 +87396,32 @@ function createCITelemetryData(telemetryData) {
     };
 }
 exports.createCITelemetryData = createCITelemetryData;
+function sendData(url, ciTelemetryData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        logger.debug(`Send data url: ${url}`);
+        try {
+            const { data } = yield axios_1.default.post(url, ciTelemetryData, {
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'ApiKey 6327942a-36ff-40a5-a840-98e71cc2af7e'
+                },
+            });
+            console.log(JSON.stringify(data, null, 4));
+        }
+        catch (error) {
+            if (axios_1.default.isAxiosError(error)) {
+                console.log('error message: ', error.message);
+                // 👇️ error: AxiosError<any, any>
+                logger.error(error.message);
+            }
+            else {
+                console.log('unexpected error: ', error);
+                logger.error(`unexpected error: ${error}`);
+            }
+        }
+    });
+}
+exports.sendData = sendData;
 
 
 /***/ }),
