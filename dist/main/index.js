@@ -87397,7 +87397,7 @@ function sendData(url, ciTelemetryData) {
             const { data } = yield axios_1.default.post(url, ciTelemetryData, {
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': 'ApiKey 6327942a-36ff-40a5-a840-98e71cc2af7e'
+                    'Authorization': `ApiKey ${core.getInput("api_key")}`
                 },
             });
             console.log(JSON.stringify(data, null, 4));

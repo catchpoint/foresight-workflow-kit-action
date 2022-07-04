@@ -6,6 +6,9 @@ inputs:
     description: "GitHub API Access Token"
     default: ${{ github.token }}
     required: false
+  api_key:
+    description: "Foresight API KEY"
+    required: true
   stat_frequency:
     description: "Statistic collection frequency in seconds. Must be a number. Defaults to '5'."
     default: 5
