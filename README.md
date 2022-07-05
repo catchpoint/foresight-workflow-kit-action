@@ -4,7 +4,7 @@ A GitHub Action to track and monitor the resource metrics of your GitHub Action 
 
 - CPU Load (user and system) in percentage
 - Memory usage (used and free) in MB
-- Network I/O (read and write) in MB
+- Network I/O (receive and transmit) in MB
 - Disk I/O (read and write) in MB
 
 ### Example Output

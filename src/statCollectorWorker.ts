@@ -38,14 +38,20 @@ function collectCPUStats(
       .then((data: si.Systeminformation.CurrentLoadData) => {
         const points: Point[] = [
           {
+            unit: "Percentage",
+            description: "CPU Load Total",
             name: "cpu.load.total",
             value: data.currentLoad
           },
           {
+            unit: "Percentage",
+            description: "CPU Load User",
             name: "cpu.load.user",
             value: data.currentLoadUser
           },
           {
+            unit: "Percentage",
+            description: "CPU Load System",
             name: "cpu.load.system",
             value: data.currentLoadSystem
           }
@@ -77,14 +83,20 @@ function collectMemoryStats(
       .then((data: si.Systeminformation.MemData) => {
         const points: Point[] = [
           {
+            unit: "Mb",
+            description: "Memory Usage Total",
             name: "memory.usage.total",
             value: data.total / 1024 / 1024
           },
           {
+            unit: "Mb",
+            description: "Memory Usage Active",
             name: "memory.usage.active",
             value: data.active / 1024 / 1024
           },
           {
+            unit: "Mb",
+            description: "Memory Usage Available",
             name: "memory.usage.available",
             value: data.available / 1024 / 1024
           }
@@ -122,10 +134,14 @@ function collectNetworkStats(
       }
       const points: Point[] = [
         {
+          unit: "Mb",
+          description: "Network IO Receive",
           name: "network.io.rxMb",
           value: Math.floor((totalRxSec * (timeInterval / 1000)) / 1024 / 1024)
         },
         {
+          unit: "Mb",
+          description: "Network IO Transmit",
           name: "network.io.txMb",
           value: Math.floor((totalTxSec * (timeInterval / 1000)) / 1024 / 1024)
         }
@@ -160,10 +176,14 @@ function collectDiskStats(
 
       const points: Point[] = [
         {
+          unit: "Mb",
+          description: "Disk IO Read",
           name: "disk.io.rxMb",
           value: Math.floor((rxSec * (timeInterval / 1000)) / 1024 / 1024)
         },
         {
+          unit: "Mb",
+          description: "Disk IO Write",
           name: "disk.io.wxMb",
           value: Math.floor((wxSec * (timeInterval / 1000)) / 1024 / 1024)
         }

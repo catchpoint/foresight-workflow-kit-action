@@ -41,6 +41,8 @@ export interface MetricStats {
 }
 
 export interface Point {
+    readonly unit: string
+    readonly description: string
     readonly name: string
     readonly value: Object
 }
