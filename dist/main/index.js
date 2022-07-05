@@ -86657,7 +86657,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.error = exports.info = exports.debug = exports.isDebugEnabled = void 0;
 const core = __importStar(__webpack_require__(2186));
-const LOG_HEADER = '[Workflow Telemetry]';
+const LOG_HEADER = '[Foresight Workflow Kit]';
 function isDebugEnabled() {
     return core.isDebug();
 }
@@ -86843,7 +86843,9 @@ function parse(filePath, procEventParseOptions) {
                 }
                 try {
                     const event = JSON.parse(line);
-                    logger.debug(`Parsing trace process event: ${line}`);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(`Parsing trace process event: ${line}`);
+                    }
                     if (!traceSystemProcesses && SYS_PROCS_TO_BE_IGNORED.has(event.name)) {
                         continue;
                     }
@@ -86893,7 +86895,9 @@ function parse(filePath, procEventParseOptions) {
                         exitCommandCount++;
                     }
                     else {
-                        logger.debug(`Unknown trace process event: ${line}`);
+                        if (logger.isDebugEnabled()) {
+                            logger.debug(`Unknown trace process event: ${line}`);
+                        }
                         unknownCommandCount++;
                     }
                 }

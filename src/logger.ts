@@ -1,6 +1,6 @@
 import * as core from '@actions/core'
 
-const LOG_HEADER: string = '[Workflow Telemetry]'
+const LOG_HEADER: string = '[Foresight Workflow Kit]'
 
 export function isDebugEnabled(): boolean {
   return core.isDebug();

@@ -53,7 +53,9 @@ export async function parse(filePath: string, procEventParseOptions: ProcEventPa
         }
         try {
             const event = JSON.parse(line)
-            logger.debug(`Parsing trace process event: ${line}`)
+            if (logger.isDebugEnabled()) {
+                logger.debug(`Parsing trace process event: ${line}`)
+            }
             if (!traceSystemProcesses && SYS_PROCS_TO_BE_IGNORED.has(event.name)) {
                 continue
             }
@@ -106,7 +108,9 @@ export async function parse(filePath: string, procEventParseOptions: ProcEventPa
 
                 exitCommandCount++
             } else {
-                logger.debug(`Unknown trace process event: ${line}`)
+                if (logger.isDebugEnabled()) {
+                    logger.debug(`Unknown trace process event: ${line}`)
+                }
                 unknownCommandCount++
             }
         } catch (error: any) {

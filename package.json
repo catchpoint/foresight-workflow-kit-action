@@ -2,7 +2,7 @@
   "name": "foresight-workflow-kit-action",
   "version": "0.0.0",
   "private": true,
-  "description": "Workflow Telemetry Action",
+  "description": "Foresight Workflow Telemetry and Analyzer Action",
   "main": "lib/main.js",
   "scripts": {
     "build": "tsc",
