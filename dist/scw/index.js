@@ -37434,7 +37434,7 @@ exports.WORKFLOW_TELEMETRY_VERSIONS = {
     METRIC: "v1",
     PROCESS: "v1"
 };
-const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight.service.thundra.${process.env["WORKFLOW_TELEMETRY_DOMAIN"] || 'io'}/api/`;
+const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight-backend.service.thundra.${process.env["WORKFLOW_TELEMETRY_DOMAIN"] || 'io'}/api/`;
 exports.WORKFLOW_TELEMETRY_ENDPOINTS = {
     METRIC: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/metrics`,
     PROCESS: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/process`

@@ -19,12 +19,15 @@ To use the action, add the following step before the steps you want to track.
 
 ```yaml
 - name: Collect Workflow Telemetry
-  uses: thundra-io/foresight-workflow-kit-action@v1
+  uses: runforesight/foresight-workflow-kit-action@v1
+  with:
+    api_key: <foresight_api_key>
 ```
 
 ## Configuration
 
 | Option                | Requirement       | Description
 | ---                   | ---               | ---
+| `api_key`        | Required          |  Foresight Api Key.
 | `github_token`        | Optional          | An alternative GitHub token, other than the default provided by GitHub Actions runner.
 | `stat_frequency`      | Optional          | Statistic collection frequency in seconds. Must be a number. Defaults to `5`.
