@@ -37429,15 +37429,16 @@ const logger = __importStar(__webpack_require__(4636));
 const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
 const axios_1 = __importDefault(__webpack_require__(6545));
+const path = __importStar(__webpack_require__(5622));
 exports.WORKFLOW_TELEMETRY_SERVER_PORT = "WORKFLOW_TELEMETRY_SERVER_PORT";
 exports.WORKFLOW_TELEMETRY_VERSIONS = {
     METRIC: "v1",
     PROCESS: "v1"
 };
-const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight.service.thundra.${process.env["WORKFLOW_TELEMETRY_DOMAIN"] || 'io'}/api/`;
+const WORKFLOW_TELEMETRY_BASE_URL = `${process.env["WORKFLOW_TELEMETRY_BASE_URL"] || "https://foresight.service.thundra.io"}`;
 exports.WORKFLOW_TELEMETRY_ENDPOINTS = {
-    METRIC: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/metrics`,
-    PROCESS: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.PROCESS}/telemetry/processes`
+    METRIC: new URL(path.join("/api", exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC, "/telemetry/metrics"), WORKFLOW_TELEMETRY_BASE_URL).toString(),
+    PROCESS: new URL(path.join("/api", exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC, "/telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
 exports.JOB_STATES_NAME = {
     FORESIGHT_WORKFLOW_JOB_ID: "FORESIGHT_WORKFLOW_JOB_ID",

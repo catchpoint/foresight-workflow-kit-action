@@ -9,6 +9,14 @@ inputs:
   api_key:
     description: "Foresight API KEY"
     required: true
+  min_proc_duration:
+    description: "Minimum duration value in milliseconds to trace processes. Must be a number. Defaults to '-1' (no min value)."
+    default: -1
+    required: false
+  trace_sys_procs:
+    description: "Enables tracing default system processes ('aws', 'cat', 'sed', ...). Defaults to 'false'."
+    default: 'false'
+    required: false
   stat_frequency:
     description: "Statistic collection frequency in seconds. Must be a number. Defaults to '5'."
     default: 5

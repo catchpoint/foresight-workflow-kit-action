@@ -3,6 +3,7 @@ import * as core from '@actions/core'
 import { CITelemetryData, JobInfo, MetaData, ProcessTelemetryDatum, TelemetryDatum } from './interfaces';
 import * as github from '@actions/github';
 import axios from 'axios';
+import * as path from 'path';
 
 export const WORKFLOW_TELEMETRY_SERVER_PORT = "WORKFLOW_TELEMETRY_SERVER_PORT";
 
@@ -11,11 +12,11 @@ export const WORKFLOW_TELEMETRY_VERSIONS = {
     PROCESS: "v1"
 };
 
-const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight.service.thundra.${process.env["WORKFLOW_TELEMETRY_DOMAIN"] || 'io'}/api/`
+const WORKFLOW_TELEMETRY_BASE_URL = `${process.env["WORKFLOW_TELEMETRY_BASE_URL"] || "https://foresight.service.thundra.io"}`
 
 export const WORKFLOW_TELEMETRY_ENDPOINTS = {
-    METRIC: `${WORKFLOW_TELEMETRY_BASE_URL}${WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/metrics`,
-    PROCESS: `${WORKFLOW_TELEMETRY_BASE_URL}${WORKFLOW_TELEMETRY_VERSIONS.PROCESS}/telemetry/processes`
+    METRIC: new URL(path.join("/api", WORKFLOW_TELEMETRY_VERSIONS.METRIC, "/telemetry/metrics"), WORKFLOW_TELEMETRY_BASE_URL).toString(),
+    PROCESS: new URL(path.join("/api", WORKFLOW_TELEMETRY_VERSIONS.METRIC, "/telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
 
 export const JOB_STATES_NAME = {
