@@ -87275,7 +87275,7 @@ function sendMetricData(port) {
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`);
             }
-            (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData);
+            (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData);
         }
         catch (error) {
             logger.error('Unable to send stat collector result');
@@ -87342,7 +87342,7 @@ exports.WORKFLOW_TELEMETRY_VERSIONS = {
 const WORKFLOW_TELEMETRY_BASE_URL = `https://foresight-backend.service.thundra.${process.env["WORKFLOW_TELEMETRY_DOMAIN"] || 'io'}/api/`;
 exports.WORKFLOW_TELEMETRY_ENDPOINTS = {
     METRIC: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/metrics`,
-    PROCESS: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC}/telemetry/process`
+    PROCESS: `${WORKFLOW_TELEMETRY_BASE_URL}${exports.WORKFLOW_TELEMETRY_VERSIONS.PROCESS}/telemetry/processes`
 };
 exports.JOB_STATES_NAME = {
     FORESIGHT_WORKFLOW_JOB_ID: "FORESIGHT_WORKFLOW_JOB_ID",

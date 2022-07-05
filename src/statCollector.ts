@@ -142,7 +142,7 @@ export async function sendMetricData(port: number): Promise<void> {
     if (logger.isDebugEnabled()) {
       logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`)
     }
-    sendData(WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData);
+    sendData(WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData);
   } catch (error: any) {
     logger.error('Unable to send stat collector result')
     logger.error(error)
