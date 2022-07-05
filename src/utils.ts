@@ -88,7 +88,7 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
           },
         );
     
-        console.log(JSON.stringify(data, null, 4));
+        logger.debug(JSON.stringify(data, null, 4));
       } catch (error) {
         if (axios.isAxiosError(error)) {
           logger.error(error.message);

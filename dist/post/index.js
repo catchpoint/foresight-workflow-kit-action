@@ -87407,7 +87407,7 @@ function sendData(url, ciTelemetryData) {
                     'Authorization': `ApiKey ${core.getInput("api_key")}`
                 },
             });
-            console.log(JSON.stringify(data, null, 4));
+            logger.debug(JSON.stringify(data, null, 4));
         }
         catch (error) {
             if (axios_1.default.isAxiosError(error)) {
