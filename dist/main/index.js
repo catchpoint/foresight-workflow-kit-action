@@ -87397,7 +87397,7 @@ function createCITelemetryData(telemetryData) {
 exports.createCITelemetryData = createCITelemetryData;
 function sendData(url, ciTelemetryData) {
     return __awaiter(this, void 0, void 0, function* () {
-        logger.debug(`Send data url: ${url} ${core.getInput("api_key")}`);
+        logger.debug(`Sending data (api key=${core.getInput("api_key")}) to url: ${url}`);
         try {
             const { data } = yield axios_1.default.post(url, ciTelemetryData, {
                 headers: {
@@ -87405,7 +87405,9 @@ function sendData(url, ciTelemetryData) {
                     'Authorization': `ApiKey ${core.getInput("api_key")}`
                 },
             });
-            logger.debug(JSON.stringify(data, null, 4));
+            if (logger.isDebugEnabled()) {
+                logger.debug(JSON.stringify(data, null, 4));
+            }
         }
         catch (error) {
             if (axios_1.default.isAxiosError(error)) {

@@ -75,7 +75,7 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
 
 export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 {
-    logger.debug(`Send data url: ${url} ${core.getInput("api_key")}`);
+    logger.debug(`Sending data (api key=${core.getInput("api_key")}) to url: ${url}`);
     try {
         const { data } = await axios.post(
           url,
@@ -88,7 +88,9 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
           },
         );
     
-        logger.debug(JSON.stringify(data, null, 4));
+        if (logger.isDebugEnabled()) {
+          logger.debug(JSON.stringify(data, null, 4));
+        }
       } catch (error) {
         if (axios.isAxiosError(error)) {
           logger.error(error.message);
