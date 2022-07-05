@@ -37493,11 +37493,11 @@ function createCITelemetryData(telemetryData) {
 exports.createCITelemetryData = createCITelemetryData;
 function sendData(url, ciTelemetryData) {
     return __awaiter(this, void 0, void 0, function* () {
-        logger.debug(`Send data url: ${url}`);
+        logger.debug(`Send data url: ${url} ${core.getInput("api_key")}`);
         try {
             const { data } = yield axios_1.default.post(url, ciTelemetryData, {
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-type': 'application/json; charset=utf-8',
                     'Authorization': `ApiKey ${core.getInput("api_key")}`
                 },
             });
@@ -37505,12 +37505,9 @@ function sendData(url, ciTelemetryData) {
         }
         catch (error) {
             if (axios_1.default.isAxiosError(error)) {
-                console.log('error message: ', error.message);
-                // 👇️ error: AxiosError<any, any>
                 logger.error(error.message);
             }
             else {
-                console.log('unexpected error: ', error);
                 logger.error(`unexpected error: ${error}`);
             }
         }

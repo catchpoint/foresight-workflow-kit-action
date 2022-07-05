@@ -74,14 +74,14 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
 
 export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 {
-    logger.debug(`Send data url: ${url}`);
+    logger.debug(`Send data url: ${url} ${core.getInput("api_key")}`);
     try {
         const { data } = await axios.post(
           url,
           ciTelemetryData,
           {
             headers: {
-              'Content-Type': 'application/json',
+              'Content-type': 'application/json; charset=utf-8',
               'Authorization': `ApiKey ${core.getInput("api_key")}`
             },
           },
@@ -90,11 +90,8 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
         console.log(JSON.stringify(data, null, 4));
       } catch (error) {
         if (axios.isAxiosError(error)) {
-          console.log('error message: ', error.message);
-          // 👇️ error: AxiosError<any, any>
           logger.error(error.message);
         } else {
-          console.log('unexpected error: ', error);
           logger.error(`unexpected error: ${error}`)
         }
       }
