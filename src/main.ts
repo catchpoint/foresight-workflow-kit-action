@@ -1,18 +1,21 @@
 import * as core from '@actions/core'
-import {wait} from './wait'
+import * as statCollector from './statCollector';
+import * as processTracer from './processTracer';
+import * as logger from './logger';
+import { setServerPort } from './utils';
 
 async function run(): Promise<void> {
   try {
-    const ms: string = core.getInput('milliseconds')
-    core.debug(`Waiting ${ms} milliseconds ...`) // debug is only output if you set the secret `ACTIONS_STEP_DEBUG` to true
+    logger.info(`Initializing ...`)
+    await setServerPort();
+    // Start stat collector
+    await statCollector.start()
+    // Start process tracer
+    await processTracer.start()
 
-    core.debug(new Date().toTimeString())
-    await wait(parseInt(ms, 10))
-    core.debug(new Date().toTimeString())
-
-    core.setOutput('time', new Date().toTimeString())
-  } catch (error) {
-    if (error instanceof Error) core.setFailed(error.message)
+    logger.info(`Initialization completed`)
+  } catch (error: any) {
+    core.setFailed(error.message)
   }
 }
 
