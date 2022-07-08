@@ -15,8 +15,8 @@ export const WORKFLOW_TELEMETRY_VERSIONS = {
 const WORKFLOW_TELEMETRY_BASE_URL = `${process.env["WORKFLOW_TELEMETRY_BASE_URL"] || "https://foresight.service.thundra.io"}`
 
 export const WORKFLOW_TELEMETRY_ENDPOINTS = {
-    METRIC: new URL(path.join("/api", WORKFLOW_TELEMETRY_VERSIONS.METRIC, "/telemetry/metrics"), WORKFLOW_TELEMETRY_BASE_URL).toString(),
-    PROCESS: new URL(path.join("/api", WORKFLOW_TELEMETRY_VERSIONS.METRIC, "/telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
+    METRIC: new URL(path.join("api", WORKFLOW_TELEMETRY_VERSIONS.METRIC, "telemetry/metrics"), WORKFLOW_TELEMETRY_BASE_URL).toString(),
+    PROCESS: new URL(path.join("api", WORKFLOW_TELEMETRY_VERSIONS.METRIC, "telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
 
 export const JOB_STATES_NAME = {
