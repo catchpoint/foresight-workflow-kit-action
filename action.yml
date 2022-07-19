@@ -1,5 +1,5 @@
-name: "Workflow Telemetry"
-description: "Workflow Telemetry"
+name: "Foresight Workflow Kit"
+description: "Foresight Workflow Kit"
 author: "Serkan Özal <serkan@thundra.io>"
 inputs:
   github_token:
