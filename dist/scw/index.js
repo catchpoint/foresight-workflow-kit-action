@@ -37181,19 +37181,19 @@ function collectCPUStats(statTime, timeInterval) {
                 unit: "Percentage",
                 description: "CPU Load Total",
                 name: "cpu.load.total",
-                value: data.currentLoad
+                value: (data.currentLoad || 0)
             },
             {
                 unit: "Percentage",
                 description: "CPU Load User",
                 name: "cpu.load.user",
-                value: data.currentLoadUser
+                value: (data.currentLoadUser || 0)
             },
             {
                 unit: "Percentage",
                 description: "CPU Load System",
                 name: "cpu.load.system",
-                value: data.currentLoadSystem
+                value: (data.currentLoadSystem || 0)
             }
         ];
         const cpuStats = {
@@ -37220,19 +37220,19 @@ function collectMemoryStats(statTime, timeInterval) {
                 unit: "Mb",
                 description: "Memory Usage Total",
                 name: "memory.usage.total",
-                value: data.total / 1024 / 1024
+                value: (data.total || 0) / 1024 / 1024
             },
             {
                 unit: "Mb",
                 description: "Memory Usage Active",
                 name: "memory.usage.active",
-                value: data.active / 1024 / 1024
+                value: (data.active || 0) / 1024 / 1024
             },
             {
                 unit: "Mb",
                 description: "Memory Usage Available",
                 name: "memory.usage.available",
-                value: data.available / 1024 / 1024
+                value: (data.available || 0) / 1024 / 1024
             }
         ];
         const memoryStats = {
@@ -37256,8 +37256,8 @@ function collectNetworkStats(statTime, timeInterval) {
         .then((data) => {
         let totalRxSec = 0, totalTxSec = 0;
         for (let nsd of data) {
-            totalRxSec += nsd.rx_sec;
-            totalTxSec += nsd.tx_sec;
+            totalRxSec += nsd.rx_sec || 0;
+            totalTxSec += nsd.tx_sec || 0;
         }
         const points = [
             {
