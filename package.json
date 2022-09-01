@@ -1,6 +1,6 @@
 {
   "name": "foresight-workflow-kit-action",
-  "version": "0.0.0",
+  "version": "1.0.2",
   "private": true,
   "description": "Foresight Workflow Telemetry and Analyzer Action",
   "main": "lib/main.js",
