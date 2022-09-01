@@ -37181,19 +37181,19 @@ function collectCPUStats(statTime, timeInterval) {
                 unit: "Percentage",
                 description: "CPU Load Total",
                 name: "cpu.load.total",
-                value: (data.currentLoad || 0)
+                value: (data.currentLoad && data.currentLoad > 0 ? data.currentLoad : 0)
             },
             {
                 unit: "Percentage",
                 description: "CPU Load User",
                 name: "cpu.load.user",
-                value: (data.currentLoadUser || 0)
+                value: (data.currentLoadUser && data.currentLoadUser > 0 ? data.currentLoadUser : 0)
             },
             {
                 unit: "Percentage",
                 description: "CPU Load System",
                 name: "cpu.load.system",
-                value: (data.currentLoadSystem || 0)
+                value: (data.currentLoadSystem && data.currentLoadSystem > 0 ? data.currentLoadSystem : 0)
             }
         ];
         const cpuStats = {
@@ -37220,19 +37220,19 @@ function collectMemoryStats(statTime, timeInterval) {
                 unit: "Mb",
                 description: "Memory Usage Total",
                 name: "memory.usage.total",
-                value: (data.total || 0) / 1024 / 1024
+                value: (data.total && data.total > 0 ? data.total : 0) / 1024 / 1024
             },
             {
                 unit: "Mb",
                 description: "Memory Usage Active",
                 name: "memory.usage.active",
-                value: (data.active || 0) / 1024 / 1024
+                value: (data.active && data.active > 0 ? data.active : 0) / 1024 / 1024
             },
             {
                 unit: "Mb",
                 description: "Memory Usage Available",
                 name: "memory.usage.available",
-                value: (data.available || 0) / 1024 / 1024
+                value: (data.available && data.available > 0 ? data.available : 0) / 1024 / 1024
             }
         ];
         const memoryStats = {
@@ -37256,8 +37256,8 @@ function collectNetworkStats(statTime, timeInterval) {
         .then((data) => {
         let totalRxSec = 0, totalTxSec = 0;
         for (let nsd of data) {
-            totalRxSec += nsd.rx_sec || 0;
-            totalTxSec += nsd.tx_sec || 0;
+            totalRxSec += nsd.rx_sec && nsd.rx_sec > 0 ? nsd.rx_sec : 0;
+            totalTxSec += nsd.tx_sec && nsd.tx_sec > 0 ? nsd.tx_sec : 0;
         }
         const points = [
             {
@@ -37292,8 +37292,8 @@ function collectDiskStats(statTime, timeInterval) {
     return systeminformation_1.default
         .fsStats()
         .then((data) => {
-        let rxSec = data.rx_sec ? data.rx_sec : 0;
-        let wxSec = data.wx_sec ? data.wx_sec : 0;
+        let rxSec = data.rx_sec && data.rx_sec > 0 ? data.rx_sec : 0;
+        let wxSec = data.wx_sec && data.wx_sec > 0 ? data.wx_sec : 0;
         const points = [
             {
                 unit: "Mb",
