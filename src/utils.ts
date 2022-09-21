@@ -109,6 +109,7 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 async function getApiKey (url :string, metaData: MetaData) : Promise<string | null>
 {
     const apiKey : string = core.getInput("api_key");
+
     if (apiKey != null) {
       logger.debug(`Getting ApiKey (${apiKey}) from action.`);
       return apiKey;
@@ -123,7 +124,7 @@ async function getOnDemandApiKey (url :string, metaData: MetaData) : Promise<str
 {
     logger.debug(`Getting on demand api key`);
     try {
-        const { apiKey } =  await axios.post(
+        const { data } =  await axios.post(
           url,
           metaData,
           {
@@ -132,7 +133,8 @@ async function getOnDemandApiKey (url :string, metaData: MetaData) : Promise<str
             },
           },
         );
-        return apiKey;
+        logger.debug(`Data: ${data}`)
+        return data;
     } catch (error) {
         if (axios.isAxiosError(error)) {
           logger.error(error.message);

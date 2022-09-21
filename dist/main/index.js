@@ -87397,12 +87397,17 @@ function createCITelemetryData(telemetryData) {
 exports.createCITelemetryData = createCITelemetryData;
 function sendData(url, ciTelemetryData) {
     return __awaiter(this, void 0, void 0, function* () {
-        logger.debug(`Sending data (api key=${core.getInput("api_key")}) to url: ${url}`);
+        const apiKey = yield getApiKey(url, ciTelemetryData.metaData);
+        if (apiKey == null) {
+            logger.debug(`ApiKey is not exists! Data can not be send.`);
+            return;
+        }
+        logger.debug(`Sending data (api key=${apiKey}) to url: ${url}`);
         try {
             const { data } = yield axios_1.default.post(url, ciTelemetryData, {
                 headers: {
                     'Content-type': 'application/json; charset=utf-8',
-                    'Authorization': `ApiKey ${core.getInput("api_key")}`
+                    'Authorization': `ApiKey ${apiKey}`
                 },
             });
             if (logger.isDebugEnabled()) {
@@ -87420,6 +87425,43 @@ function sendData(url, ciTelemetryData) {
     });
 }
 exports.sendData = sendData;
+function getApiKey(url, metaData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const apiKey = core.getInput("api_key");
+        if (apiKey != null) {
+            logger.debug(`Getting ApiKey (${apiKey}) from action.`);
+            return apiKey;
+        }
+        else {
+            logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
+            const onDemandApiKey = yield getOnDemandApiKey(url, metaData);
+            return (onDemandApiKey != null) ? onDemandApiKey : null;
+        }
+    });
+}
+function getOnDemandApiKey(url, metaData) {
+    return __awaiter(this, void 0, void 0, function* () {
+        logger.debug(`Getting on demand api key`);
+        try {
+            const { data } = yield axios_1.default.post(url, metaData, {
+                headers: {
+                    'Content-type': 'application/json; charset=utf-8'
+                },
+            });
+            logger.debug(`Data: ${data}`);
+            return data;
+        }
+        catch (error) {
+            if (axios_1.default.isAxiosError(error)) {
+                logger.error(error.message);
+            }
+            else {
+                logger.error(`unexpected error: ${error}`);
+            }
+            return null;
+        }
+    });
+}
 
 
 /***/ }),
