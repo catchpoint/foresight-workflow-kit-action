@@ -109,9 +109,8 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 async function getApiKey (url :string, metaData: MetaData) : Promise<string | null>
 {
     const apiKey : string = core.getInput("api_key");
-
-    if (apiKey != null) {
-      logger.debug(`Getting ApiKey (${apiKey}) from action.`);
+    if (apiKey) {
+      logger.debug(`ApiKey: ${apiKey}`);
       return apiKey;
     } else {
       logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
