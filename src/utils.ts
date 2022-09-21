@@ -76,6 +76,11 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
 
 export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 {
+    let apiKey : string = core.getInput("api_key");
+    if (apiKey == null) {
+      logger.debug(`api key is null`);
+      return;
+    }
     logger.debug(`Sending data (api key=${core.getInput("api_key")}) to url: ${url}`);
     try {
         const { data } = await axios.post(
