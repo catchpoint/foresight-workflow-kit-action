@@ -76,12 +76,12 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
 
 export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 {
-    let apiKey : string = core.getInput("api_key");
+    const apiKey = await getApiKey(url, ciTelemetryData.metaData);
     if (apiKey == null) {
-      logger.debug(`api key is null`);
+      logger.debug(`ApiKey is not exists! Data can not be send.`);
       return;
     }
-    logger.debug(`Sending data (api key=${core.getInput("api_key")}) to url: ${url}`);
+    logger.debug(`Sending data (api key=${apiKey}) to url: ${url}`);
     try {
         const { data } = await axios.post(
           url,
@@ -89,7 +89,7 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
           {
             headers: {
               'Content-type': 'application/json; charset=utf-8',
-              'Authorization': `ApiKey ${core.getInput("api_key")}`
+              'Authorization': `ApiKey ${apiKey}`
             },
           },
         );
@@ -104,4 +104,41 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
           logger.error(`unexpected error: ${error}`)
         }
       }
+}
+
+async function getApiKey (url :string, metaData: MetaData) : Promise<string | null>
+{
+    const apiKey : string = core.getInput("api_key");
+    if (apiKey != null) {
+      logger.debug(`Getting ApiKey (${apiKey}) from action.`);
+      return apiKey;
+    } else {
+      logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
+      const onDemandApiKey = await getOnDemandApiKey(url, metaData);
+      return (onDemandApiKey != null) ? onDemandApiKey : null
+    }
+}
+
+async function getOnDemandApiKey (url :string, metaData: MetaData) : Promise<string | null>
+{
+    logger.debug(`Getting on demand api key`);
+    try {
+        const { apiKey } =  await axios.post(
+          url,
+          metaData,
+          {
+            headers: {
+              'Content-type': 'application/json; charset=utf-8'
+            },
+          },
+        );
+        return apiKey;
+    } catch (error) {
+        if (axios.isAxiosError(error)) {
+          logger.error(error.message);
+        } else {
+          logger.error(`unexpected error: ${error}`)
+        }
+        return null;
+    }
 }
