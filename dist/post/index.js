@@ -87333,7 +87333,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sendData = exports.createCITelemetryData = exports.saveJobInfos = exports.setServerPort = exports.JOB_STATES_NAME = exports.WORKFLOW_TELEMETRY_ENDPOINTS = exports.WORKFLOW_TELEMETRY_VERSIONS = exports.WORKFLOW_TELEMETRY_SERVER_PORT = void 0;
+exports.sendData = exports.createCITelemetryData = exports.saveJobInfos = exports.setServerPort = exports.JOB_STATES_NAME = exports.ON_DEMAND_API_KEY_ENDPOINT = exports.WORKFLOW_TELEMETRY_ENDPOINTS = exports.WORKFLOW_TELEMETRY_VERSIONS = exports.WORKFLOW_TELEMETRY_SERVER_PORT = void 0;
 const logger = __importStar(__webpack_require__(4636));
 const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
@@ -87349,6 +87349,8 @@ exports.WORKFLOW_TELEMETRY_ENDPOINTS = {
     METRIC: new URL(path.join("api", exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC, "telemetry/metrics"), WORKFLOW_TELEMETRY_BASE_URL).toString(),
     PROCESS: new URL(path.join("api", exports.WORKFLOW_TELEMETRY_VERSIONS.PROCESS, "telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
+const API_KEY_BASE_URL = `${process.env["API_KEY_BASE_URL"] || "https://api.service.runforesight.com"}`;
+exports.ON_DEMAND_API_KEY_ENDPOINT = new URL(path.join("api", "apikey/ondemand"), API_KEY_BASE_URL).toString();
 exports.JOB_STATES_NAME = {
     FORESIGHT_WORKFLOW_JOB_ID: "FORESIGHT_WORKFLOW_JOB_ID",
     FORESIGHT_WORKFLOW_JOB_NAME: "FORESIGHT_WORKFLOW_JOB_NAME",
@@ -87403,7 +87405,7 @@ function createCITelemetryData(telemetryData) {
 exports.createCITelemetryData = createCITelemetryData;
 function sendData(url, ciTelemetryData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const apiKey = yield getApiKey(url, ciTelemetryData.metaData);
+        const apiKey = yield getApiKey(ciTelemetryData.metaData);
         if (apiKey == null) {
             logger.debug(`ApiKey is not exists! Data can not be send.`);
             return;
@@ -87431,7 +87433,7 @@ function sendData(url, ciTelemetryData) {
     });
 }
 exports.sendData = sendData;
-function getApiKey(url, metaData) {
+function getApiKey(metaData) {
     return __awaiter(this, void 0, void 0, function* () {
         const apiKey = core.getInput("api_key");
         if (apiKey) {
@@ -87440,16 +87442,16 @@ function getApiKey(url, metaData) {
         }
         else {
             logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
-            const onDemandApiKey = yield getOnDemandApiKey(url, metaData);
+            const onDemandApiKey = yield getOnDemandApiKey(metaData);
             return (onDemandApiKey != null) ? onDemandApiKey : null;
         }
     });
 }
-function getOnDemandApiKey(url, metaData) {
+function getOnDemandApiKey(metaData) {
     return __awaiter(this, void 0, void 0, function* () {
-        logger.debug(`Getting on demand api key`);
+        logger.debug(`Getting on demand api key from: ${exports.ON_DEMAND_API_KEY_ENDPOINT}`);
         try {
-            const { data } = yield axios_1.default.post(url, metaData, {
+            const { data } = yield axios_1.default.post(exports.ON_DEMAND_API_KEY_ENDPOINT, metaData, {
                 headers: {
                     'Content-type': 'application/json; charset=utf-8'
                 },

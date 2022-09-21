@@ -19,6 +19,10 @@ export const WORKFLOW_TELEMETRY_ENDPOINTS = {
     PROCESS: new URL(path.join("api", WORKFLOW_TELEMETRY_VERSIONS.PROCESS, "telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
 
+const API_KEY_BASE_URL = `${process.env["API_KEY_BASE_URL"] || "https://api.service.runforesight.com"}`
+export const ON_DEMAND_API_KEY_ENDPOINT = new URL(path.join("api", "apikey/ondemand"), API_KEY_BASE_URL).toString()
+
+
 export const JOB_STATES_NAME = {
     FORESIGHT_WORKFLOW_JOB_ID: "FORESIGHT_WORKFLOW_JOB_ID",
     FORESIGHT_WORKFLOW_JOB_NAME: "FORESIGHT_WORKFLOW_JOB_NAME",
@@ -76,7 +80,7 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
 
 export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 {
-    const apiKey = await getApiKey(url, ciTelemetryData.metaData);
+    const apiKey = await getApiKey(ciTelemetryData.metaData);
     if (apiKey == null) {
       logger.debug(`ApiKey is not exists! Data can not be send.`);
       return;
@@ -106,7 +110,7 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
       }
 }
 
-async function getApiKey (url :string, metaData: MetaData) : Promise<string | null>
+async function getApiKey (metaData: MetaData) : Promise<string | null>
 {
     const apiKey : string = core.getInput("api_key");
     if (apiKey) {
@@ -114,17 +118,17 @@ async function getApiKey (url :string, metaData: MetaData) : Promise<string | nu
       return apiKey;
     } else {
       logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
-      const onDemandApiKey = await getOnDemandApiKey(url, metaData);
+      const onDemandApiKey = await getOnDemandApiKey( metaData);
       return (onDemandApiKey != null) ? onDemandApiKey : null
     }
 }
 
-async function getOnDemandApiKey (url :string, metaData: MetaData) : Promise<string | null>
+async function getOnDemandApiKey (metaData: MetaData) : Promise<string | null>
 {
-    logger.debug(`Getting on demand api key`);
+    logger.debug(`Getting on demand api key from: ${ON_DEMAND_API_KEY_ENDPOINT}`);
     try {
         const { data } =  await axios.post(
-          url,
+          ON_DEMAND_API_KEY_ENDPOINT,
           metaData,
           {
             headers: {
