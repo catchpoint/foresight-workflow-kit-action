@@ -87434,8 +87434,8 @@ exports.sendData = sendData;
 function getApiKey(url, metaData) {
     return __awaiter(this, void 0, void 0, function* () {
         const apiKey = core.getInput("api_key");
-        if (apiKey != null) {
-            logger.debug(`Getting ApiKey (${apiKey}) from action.`);
+        if (apiKey) {
+            logger.debug(`ApiKey: ${apiKey}`);
             return apiKey;
         }
         else {
