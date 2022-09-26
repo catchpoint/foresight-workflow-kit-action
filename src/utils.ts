@@ -1,6 +1,13 @@
 import * as logger from './logger';
 import * as core from '@actions/core'
-import {ApiKeyInfo, CITelemetryData, JobInfo, MetaData, ProcessTelemetryDatum} from './interfaces';
+import {
+    ApiKeyInfo,
+    CITelemetryData,
+    JobInfo,
+    MetaData,
+    OnDemandAPIKeyParam,
+    ProcessTelemetryDatum
+} from './interfaces';
 import * as github from '@actions/github';
 import axios from 'axios';
 import * as path from 'path';
@@ -118,18 +125,22 @@ async function getApiKey (metaData: MetaData) : Promise<ApiKeyInfo | null>
       return { apiKey:  apiKey };
     } else {
       logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
-      const onDemandApiKey = await getOnDemandApiKey( metaData);
+      const onDemandAPIKeyParam: OnDemandAPIKeyParam = {
+          repoFullName: metaData.repoName,
+          workflowRunId: metaData.runId
+      }
+      const onDemandApiKey = await getOnDemandApiKey(onDemandAPIKeyParam);
       return (onDemandApiKey != null) ? onDemandApiKey : null
     }
 }
 
-async function getOnDemandApiKey (metaData: MetaData) : Promise<ApiKeyInfo | null>
+async function getOnDemandApiKey (onDemandAPIKey: OnDemandAPIKeyParam) : Promise<ApiKeyInfo | null>
 {
     logger.debug(`Getting on demand api key from: ${ON_DEMAND_API_KEY_ENDPOINT}`);
     try {
         const { data } =  await axios.post(
           ON_DEMAND_API_KEY_ENDPOINT,
-          metaData,
+            onDemandAPIKey,
           {
             headers: {
               'Content-type': 'application/json; charset=utf-8'

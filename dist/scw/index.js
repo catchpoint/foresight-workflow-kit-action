@@ -37553,16 +37553,20 @@ function getApiKey(metaData) {
         }
         else {
             logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
-            const onDemandApiKey = yield getOnDemandApiKey(metaData);
+            const onDemandAPIKeyParam = {
+                repoFullName: metaData.repoName,
+                workflowRunId: metaData.runId
+            };
+            const onDemandApiKey = yield getOnDemandApiKey(onDemandAPIKeyParam);
             return (onDemandApiKey != null) ? onDemandApiKey : null;
         }
     });
 }
-function getOnDemandApiKey(metaData) {
+function getOnDemandApiKey(onDemandAPIKey) {
     return __awaiter(this, void 0, void 0, function* () {
         logger.debug(`Getting on demand api key from: ${exports.ON_DEMAND_API_KEY_ENDPOINT}`);
         try {
-            const { data } = yield axios_1.default.post(exports.ON_DEMAND_API_KEY_ENDPOINT, metaData, {
+            const { data } = yield axios_1.default.post(exports.ON_DEMAND_API_KEY_ENDPOINT, onDemandAPIKey, {
                 headers: {
                     'Content-type': 'application/json; charset=utf-8'
                 },

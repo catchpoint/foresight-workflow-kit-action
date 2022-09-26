@@ -69,3 +69,8 @@ export interface ProcEventParseOptions {
 export interface ApiKeyInfo {
     readonly apiKey?: string | undefined
 }
+
+export interface OnDemandAPIKeyParam {
+    readonly repoFullName: string | undefined
+    readonly workflowRunId: number | undefined
+}
