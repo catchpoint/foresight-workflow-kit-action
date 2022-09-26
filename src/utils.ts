@@ -1,6 +1,6 @@
 import * as logger from './logger';
 import * as core from '@actions/core'
-import { CITelemetryData, JobInfo, MetaData, ProcessTelemetryDatum, TelemetryDatum } from './interfaces';
+import {ApiKeyInfo, CITelemetryData, JobInfo, MetaData, ProcessTelemetryDatum} from './interfaces';
 import * as github from '@actions/github';
 import axios from 'axios';
 import * as path from 'path';
@@ -80,12 +80,12 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
 
 export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 {
-    const apiKey = await getApiKey(ciTelemetryData.metaData);
-    if (apiKey == null) {
-      logger.debug(`ApiKey is not exists! Data can not be send.`);
+    const apiKeyInfo = await getApiKey(ciTelemetryData.metaData);
+    if (apiKeyInfo == null || apiKeyInfo.apiKey == null) {
+      logger.error(`ApiKey is not exists! Data can not be send.`);
       return;
     }
-    logger.debug(`Sending data (api key=${apiKey}) to url: ${url}`);
+    logger.debug(`Sending data (api key=${apiKeyInfo.apiKey}) to url: ${url}`);
     try {
         const { data } = await axios.post(
           url,
@@ -93,7 +93,7 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
           {
             headers: {
               'Content-type': 'application/json; charset=utf-8',
-              'Authorization': `ApiKey ${apiKey}`
+              'Authorization': `ApiKey ${apiKeyInfo.apiKey}`
             },
           },
         );
@@ -110,12 +110,12 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
       }
 }
 
-async function getApiKey (metaData: MetaData) : Promise<string | null>
+async function getApiKey (metaData: MetaData) : Promise<ApiKeyInfo | null>
 {
     const apiKey : string = core.getInput("api_key");
     if (apiKey) {
       logger.debug(`ApiKey: ${apiKey}`);
-      return apiKey;
+      return { apiKey:  apiKey };
     } else {
       logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
       const onDemandApiKey = await getOnDemandApiKey( metaData);
@@ -123,7 +123,7 @@ async function getApiKey (metaData: MetaData) : Promise<string | null>
     }
 }
 
-async function getOnDemandApiKey (metaData: MetaData) : Promise<string | null>
+async function getOnDemandApiKey (metaData: MetaData) : Promise<ApiKeyInfo | null>
 {
     logger.debug(`Getting on demand api key from: ${ON_DEMAND_API_KEY_ENDPOINT}`);
     try {

@@ -65,3 +65,7 @@ export interface ProcEventParseOptions {
     readonly minDuration: number,
     readonly traceSystemProcesses: boolean
 }
+
+export interface ApiKeyInfo {
+    readonly apiKey?: string | undefined
+}

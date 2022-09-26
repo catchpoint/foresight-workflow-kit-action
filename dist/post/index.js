@@ -87405,17 +87405,17 @@ function createCITelemetryData(telemetryData) {
 exports.createCITelemetryData = createCITelemetryData;
 function sendData(url, ciTelemetryData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const apiKey = yield getApiKey(ciTelemetryData.metaData);
-        if (apiKey == null) {
-            logger.debug(`ApiKey is not exists! Data can not be send.`);
+        const apiKeyInfo = yield getApiKey(ciTelemetryData.metaData);
+        if (apiKeyInfo == null || apiKeyInfo.apiKey == null) {
+            logger.error(`ApiKey is not exists! Data can not be send.`);
             return;
         }
-        logger.debug(`Sending data (api key=${apiKey}) to url: ${url}`);
+        logger.debug(`Sending data (api key=${apiKeyInfo.apiKey}) to url: ${url}`);
         try {
             const { data } = yield axios_1.default.post(url, ciTelemetryData, {
                 headers: {
                     'Content-type': 'application/json; charset=utf-8',
-                    'Authorization': `ApiKey ${apiKey}`
+                    'Authorization': `ApiKey ${apiKeyInfo.apiKey}`
                 },
             });
             if (logger.isDebugEnabled()) {
@@ -87438,7 +87438,7 @@ function getApiKey(metaData) {
         const apiKey = core.getInput("api_key");
         if (apiKey) {
             logger.debug(`ApiKey: ${apiKey}`);
-            return apiKey;
+            return { apiKey: apiKey };
         }
         else {
             logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
