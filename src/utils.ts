@@ -26,8 +26,8 @@ export const WORKFLOW_TELEMETRY_ENDPOINTS = {
     PROCESS: new URL(path.join("api", WORKFLOW_TELEMETRY_VERSIONS.PROCESS, "telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
 
-const API_KEY_BASE_URL = `${process.env["API_KEY_BASE_URL"] || "https://api.service.runforesight.com"}`
-export const ON_DEMAND_API_KEY_ENDPOINT = new URL(path.join("api", "apikey/ondemand"), API_KEY_BASE_URL).toString()
+const ON_DEMAND_API_KEY_BASE_URL = `${process.env["ON_DEMAND_API_KEY_BASE_URL"] || "https://api-public.service.runforesight.com"}`
+export const ON_DEMAND_API_KEY_ENDPOINT = new URL(path.join("api", "v1/apikey/ondemand"), ON_DEMAND_API_KEY_BASE_URL).toString()
 
 
 export const JOB_STATES_NAME = {

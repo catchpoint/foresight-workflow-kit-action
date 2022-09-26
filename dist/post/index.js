@@ -87349,8 +87349,8 @@ exports.WORKFLOW_TELEMETRY_ENDPOINTS = {
     METRIC: new URL(path.join("api", exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC, "telemetry/metrics"), WORKFLOW_TELEMETRY_BASE_URL).toString(),
     PROCESS: new URL(path.join("api", exports.WORKFLOW_TELEMETRY_VERSIONS.PROCESS, "telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
-const API_KEY_BASE_URL = `${process.env["API_KEY_BASE_URL"] || "https://api.service.runforesight.com"}`;
-exports.ON_DEMAND_API_KEY_ENDPOINT = new URL(path.join("api", "apikey/ondemand"), API_KEY_BASE_URL).toString();
+const ON_DEMAND_API_KEY_BASE_URL = `${process.env["ON_DEMAND_API_KEY_BASE_URL"] || "https://api-public.service.runforesight.com"}`;
+exports.ON_DEMAND_API_KEY_ENDPOINT = new URL(path.join("api", "v1/apikey/ondemand"), ON_DEMAND_API_KEY_BASE_URL).toString();
 exports.JOB_STATES_NAME = {
     FORESIGHT_WORKFLOW_JOB_ID: "FORESIGHT_WORKFLOW_JOB_ID",
     FORESIGHT_WORKFLOW_JOB_NAME: "FORESIGHT_WORKFLOW_JOB_NAME",
