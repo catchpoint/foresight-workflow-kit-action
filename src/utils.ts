@@ -87,7 +87,7 @@ export function createCITelemetryData(telemetryData: ProcessTelemetryDatum): CIT
 
 export async function sendData (url :string, ciTelemetryData: CITelemetryData)
 {
-    const apiKeyInfo = await getApiKey(ciTelemetryData.metaData);
+    const apiKeyInfo = await getApiKey();
     if (apiKeyInfo == null || apiKeyInfo.apiKey == null) {
       logger.error(`ApiKey is not exists! Data can not be send.`);
       return;
@@ -117,7 +117,7 @@ export async function sendData (url :string, ciTelemetryData: CITelemetryData)
       }
 }
 
-async function getApiKey (metaData: MetaData) : Promise<ApiKeyInfo | null>
+async function getApiKey () : Promise<ApiKeyInfo | null>
 {
     const apiKey : string = core.getInput("api_key");
     if (apiKey) {
@@ -125,10 +125,12 @@ async function getApiKey (metaData: MetaData) : Promise<ApiKeyInfo | null>
       return { apiKey:  apiKey };
     } else {
       logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
+      const { repo, runId } = github.context
       const onDemandAPIKeyParam: OnDemandAPIKeyParam = {
-          repoFullName: metaData.repoName,
-          workflowRunId: metaData.runId
+          repoFullName: repo.owner + "/" + repo.repo,
+          workflowRunId: runId
       }
+      logger.debug(`On demand api key request params: ${JSON.stringify(onDemandAPIKeyParam, null, 4)} `);
       const onDemandApiKey = await getOnDemandApiKey(onDemandAPIKeyParam);
       return (onDemandApiKey != null) ? onDemandApiKey : null
     }

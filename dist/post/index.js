@@ -87405,7 +87405,7 @@ function createCITelemetryData(telemetryData) {
 exports.createCITelemetryData = createCITelemetryData;
 function sendData(url, ciTelemetryData) {
     return __awaiter(this, void 0, void 0, function* () {
-        const apiKeyInfo = yield getApiKey(ciTelemetryData.metaData);
+        const apiKeyInfo = yield getApiKey();
         if (apiKeyInfo == null || apiKeyInfo.apiKey == null) {
             logger.error(`ApiKey is not exists! Data can not be send.`);
             return;
@@ -87433,7 +87433,7 @@ function sendData(url, ciTelemetryData) {
     });
 }
 exports.sendData = sendData;
-function getApiKey(metaData) {
+function getApiKey() {
     return __awaiter(this, void 0, void 0, function* () {
         const apiKey = core.getInput("api_key");
         if (apiKey) {
@@ -87442,10 +87442,12 @@ function getApiKey(metaData) {
         }
         else {
             logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
+            const { repo, runId } = github.context;
             const onDemandAPIKeyParam = {
-                repoFullName: metaData.repoName,
-                workflowRunId: metaData.runId
+                repoFullName: repo.owner + "/" + repo.repo,
+                workflowRunId: runId
             };
+            logger.debug(`On demand api key request params: ${JSON.stringify(onDemandAPIKeyParam, null, 4)} `);
             const onDemandApiKey = yield getOnDemandApiKey(onDemandAPIKeyParam);
             return (onDemandApiKey != null) ? onDemandApiKey : null;
         }
