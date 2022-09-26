@@ -65,3 +65,12 @@ export interface ProcEventParseOptions {
     readonly minDuration: number,
     readonly traceSystemProcesses: boolean
 }
+
+export interface ApiKeyInfo {
+    readonly apiKey?: string | undefined
+}
+
+export interface OnDemandAPIKeyParam {
+    readonly repoFullName: string | undefined
+    readonly workflowRunId: number | undefined
+}

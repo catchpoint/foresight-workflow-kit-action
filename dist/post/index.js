@@ -87333,7 +87333,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-exports.sendData = exports.createCITelemetryData = exports.saveJobInfos = exports.setServerPort = exports.JOB_STATES_NAME = exports.WORKFLOW_TELEMETRY_ENDPOINTS = exports.WORKFLOW_TELEMETRY_VERSIONS = exports.WORKFLOW_TELEMETRY_SERVER_PORT = void 0;
+exports.sendData = exports.createCITelemetryData = exports.saveJobInfos = exports.setServerPort = exports.JOB_STATES_NAME = exports.ON_DEMAND_API_KEY_ENDPOINT = exports.WORKFLOW_TELEMETRY_ENDPOINTS = exports.WORKFLOW_TELEMETRY_VERSIONS = exports.WORKFLOW_TELEMETRY_SERVER_PORT = void 0;
 const logger = __importStar(__webpack_require__(4636));
 const core = __importStar(__webpack_require__(2186));
 const github = __importStar(__webpack_require__(5438));
@@ -87349,6 +87349,8 @@ exports.WORKFLOW_TELEMETRY_ENDPOINTS = {
     METRIC: new URL(path.join("api", exports.WORKFLOW_TELEMETRY_VERSIONS.METRIC, "telemetry/metrics"), WORKFLOW_TELEMETRY_BASE_URL).toString(),
     PROCESS: new URL(path.join("api", exports.WORKFLOW_TELEMETRY_VERSIONS.PROCESS, "telemetry/processes"), WORKFLOW_TELEMETRY_BASE_URL).toString()
 };
+const ON_DEMAND_API_KEY_BASE_URL = `${process.env["ON_DEMAND_API_KEY_BASE_URL"] || "https://api-public.service.runforesight.com"}`;
+exports.ON_DEMAND_API_KEY_ENDPOINT = new URL(path.join("api", "v1/apikey/ondemand"), ON_DEMAND_API_KEY_BASE_URL).toString();
 exports.JOB_STATES_NAME = {
     FORESIGHT_WORKFLOW_JOB_ID: "FORESIGHT_WORKFLOW_JOB_ID",
     FORESIGHT_WORKFLOW_JOB_NAME: "FORESIGHT_WORKFLOW_JOB_NAME",
@@ -87403,12 +87405,17 @@ function createCITelemetryData(telemetryData) {
 exports.createCITelemetryData = createCITelemetryData;
 function sendData(url, ciTelemetryData) {
     return __awaiter(this, void 0, void 0, function* () {
-        logger.debug(`Sending data (api key=${core.getInput("api_key")}) to url: ${url}`);
+        const apiKeyInfo = yield getApiKey();
+        if (apiKeyInfo == null || apiKeyInfo.apiKey == null) {
+            logger.error(`ApiKey is not exists! Data can not be send.`);
+            return;
+        }
+        logger.debug(`Sending data (api key=${apiKeyInfo.apiKey}) to url: ${url}`);
         try {
             const { data } = yield axios_1.default.post(url, ciTelemetryData, {
                 headers: {
                     'Content-type': 'application/json; charset=utf-8',
-                    'Authorization': `ApiKey ${core.getInput("api_key")}`
+                    'Authorization': `ApiKey ${apiKeyInfo.apiKey}`
                 },
             });
             if (logger.isDebugEnabled()) {
@@ -87426,6 +87433,49 @@ function sendData(url, ciTelemetryData) {
     });
 }
 exports.sendData = sendData;
+function getApiKey() {
+    return __awaiter(this, void 0, void 0, function* () {
+        const apiKey = core.getInput("api_key");
+        if (apiKey) {
+            logger.debug(`ApiKey: ${apiKey}`);
+            return { apiKey: apiKey };
+        }
+        else {
+            logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
+            const { repo, runId } = github.context;
+            const onDemandAPIKeyParam = {
+                repoFullName: repo.owner + "/" + repo.repo,
+                workflowRunId: runId
+            };
+            logger.debug(`On demand api key request params: ${JSON.stringify(onDemandAPIKeyParam, null, 4)} `);
+            const onDemandApiKey = yield getOnDemandApiKey(onDemandAPIKeyParam);
+            return (onDemandApiKey != null) ? onDemandApiKey : null;
+        }
+    });
+}
+function getOnDemandApiKey(onDemandAPIKey) {
+    return __awaiter(this, void 0, void 0, function* () {
+        logger.debug(`Getting on demand api key from: ${exports.ON_DEMAND_API_KEY_ENDPOINT}`);
+        try {
+            const { data } = yield axios_1.default.post(exports.ON_DEMAND_API_KEY_ENDPOINT, onDemandAPIKey, {
+                headers: {
+                    'Content-type': 'application/json; charset=utf-8'
+                },
+            });
+            logger.debug(`Data: ${data}`);
+            return data;
+        }
+        catch (error) {
+            if (axios_1.default.isAxiosError(error)) {
+                logger.error(error.message);
+            }
+            else {
+                logger.error(`unexpected error: ${error}`);
+            }
+            return null;
+        }
+    });
+}
 
 
 /***/ }),
