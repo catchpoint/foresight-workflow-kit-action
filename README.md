@@ -22,7 +22,7 @@ To use the action, add the following step before the steps you want to track.
 
 | Option                | Requirement       | Description
 | ---                   | ---               | ---
-| `api_key`        | Required          |  Foresight Api Key.
+| `api_key`        | Optional          |  Foresight API Key. Foresight API key is **required** for private repositories but **optional** for public open-source repositories  
 | `github_token`        | Optional          | An alternative GitHub token, other than the default provided by GitHub Actions runner.
 | `min_proc_duration`      | Optional          | Minimum duration value in milliseconds to trace processes. Must be a number. Defaults to '-1' (no min value).
 | `trace_sys_procs`      | Optional          | Enables tracing default system processes ('aws', 'cat', 'sed', ...). Defaults to 'false'.
