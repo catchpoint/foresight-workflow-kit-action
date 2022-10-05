@@ -86745,7 +86745,7 @@ function run() {
             logger.info(`Finish completed`);
         }
         catch (error) {
-            core.setFailed(error.message);
+            logger.error(error.message);
         }
     });
 }

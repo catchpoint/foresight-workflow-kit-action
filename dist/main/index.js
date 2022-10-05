@@ -86722,7 +86722,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
-const core = __importStar(__webpack_require__(2186));
 const statCollector = __importStar(__webpack_require__(6451));
 const processTracer = __importStar(__webpack_require__(7728));
 const logger = __importStar(__webpack_require__(4636));
@@ -86739,7 +86738,7 @@ function run() {
             logger.info(`Initialization completed`);
         }
         catch (error) {
-            core.setFailed(error.message);
+            logger.error(error.message);
         }
     });
 }
