@@ -86745,6 +86745,7 @@ function run() {
             logger.info(`Finish completed`);
         }
         catch (error) {
+            logger.info(`Please sure that your workflow have actions:read permission!`);
             logger.error(error.message);
         }
     });
