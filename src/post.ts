@@ -2,6 +2,9 @@ import * as core from '@actions/core'
 import * as statCollector from './statCollector';
 import * as processTracer from './processTracer';
 import * as logger from './logger'
+import {
+  JobInfo
+} from './interfaces';
 import { WORKFLOW_TELEMETRY_SERVER_PORT } from './utils';
 
 async function run(): Promise<void> {
@@ -15,7 +18,10 @@ async function run(): Promise<void> {
     await processTracer.finish()
 
     // Report stat collector
-    await statCollector.handleJobInfo()
+    const jobInfo: JobInfo | null = await statCollector.handleJobInfo()
+    if (!jobInfo) {
+      return;
+    }
     await statCollector.sendMetricData(port)
     // Report process tracer
     await processTracer.report()
