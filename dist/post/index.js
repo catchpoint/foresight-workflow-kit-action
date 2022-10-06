@@ -86738,14 +86738,17 @@ function run() {
             // Finish process tracer
             yield processTracer.finish();
             // Report stat collector
-            yield statCollector.handleJobInfo();
+            const jobInfo = yield statCollector.handleJobInfo();
+            if (!jobInfo) {
+                return;
+            }
             yield statCollector.sendMetricData(port);
             // Report process tracer
             yield processTracer.report();
             logger.info(`Finish completed`);
         }
         catch (error) {
-            logger.info(`Please sure that your workflow have actions:read permission!`);
+            logger.info(`Please sure that your workflow has "actions:read" permission!`);
             logger.error(error.message);
         }
     });
@@ -87266,8 +87269,13 @@ function handleJobInfo() {
         let commit = (pull_request && pull_request.head && pull_request.head.sha) || sha;
         logger.debug(`Commit: ${commit}`);
         const jobInfo = yield getJobInfo(octokit);
+        if (!jobInfo) {
+            logger.error("Couldn't retrieved jobInfo");
+            return null;
+        }
         logger.debug(`Job info: ${JSON.stringify(jobInfo)}`);
         (0, utils_1.saveJobInfos)(jobInfo);
+        return jobInfo;
     });
 }
 exports.handleJobInfo = handleJobInfo;

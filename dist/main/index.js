@@ -87258,8 +87258,13 @@ function handleJobInfo() {
         let commit = (pull_request && pull_request.head && pull_request.head.sha) || sha;
         logger.debug(`Commit: ${commit}`);
         const jobInfo = yield getJobInfo(octokit);
+        if (!jobInfo) {
+            logger.error("Couldn't retrieved jobInfo");
+            return null;
+        }
         logger.debug(`Job info: ${JSON.stringify(jobInfo)}`);
         (0, utils_1.saveJobInfos)(jobInfo);
+        return jobInfo;
     });
 }
 exports.handleJobInfo = handleJobInfo;

@@ -119,7 +119,7 @@ export async function finish(port: number): Promise<void> {
   }
 }
 
-export async function handleJobInfo(): Promise<void> {
+export async function handleJobInfo(): Promise<JobInfo | null> {
   const octokit: Octokit = new Octokit()
 
   logger.debug(`Workflow - Job: ${workflow} - ${job}`)
@@ -128,8 +128,13 @@ export async function handleJobInfo(): Promise<void> {
   logger.debug(`Commit: ${commit}`)
 
   const jobInfo: JobInfo = await getJobInfo(octokit)
+  if (!jobInfo) {
+    logger.error("Couldn't retrieved jobInfo");
+    return null;
+  }
   logger.debug(`Job info: ${JSON.stringify(jobInfo)}`)
   saveJobInfos(jobInfo);
+  return jobInfo;
 }
 
 export async function sendMetricData(port: number): Promise<void> {
