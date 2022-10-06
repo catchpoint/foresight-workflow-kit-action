@@ -86745,7 +86745,8 @@ function run() {
             logger.info(`Finish completed`);
         }
         catch (error) {
-            core.setFailed(error.message);
+            logger.info(`Please sure that your workflow have actions:read permission!`);
+            logger.error(error.message);
         }
     });
 }

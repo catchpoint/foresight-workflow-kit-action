@@ -22,7 +22,8 @@ async function run(): Promise<void> {
 
     logger.info(`Finish completed`)
   } catch (error: any) {
-    core.setFailed(error.message)
+    logger.info(`Please sure that your workflow has "actions:read" permission!`)
+    logger.error(error.message)
   }
 }
 
