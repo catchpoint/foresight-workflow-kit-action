@@ -1,6 +1,7 @@
 export interface JobInfo {
     readonly id?: number | undefined
     readonly name?: string | undefined
+    notAccessible?: boolean | false
 }
 
 export interface MetaData {
