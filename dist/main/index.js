@@ -87939,6 +87939,7 @@ function getJobInfo(octokit) {
             var _a;
             for (let page = 0; true; page++) {
                 let result;
+                logger.info(`getting job info from github:`);
                 try {
                     result = yield octokit.rest.actions.listJobsForWorkflowRun({
                         owner: repo.owner,
@@ -87950,7 +87951,9 @@ function getJobInfo(octokit) {
                 }
                 catch (error) {
                     result = undefined;
+                    logger.info(`Exception while gettin job info from github 1: ${JSON.stringify(error)}`);
                     if (error instanceof request_error_1.RequestError) {
+                        logger.info(`Exception while gettin job info from github 2: ${error.message}`);
                         /**
                          * check whether error is Resource not accessible by integration or not
                          * if error status equals to 403 it might be 2 different error RateLimitError or ResourceNotAccessible

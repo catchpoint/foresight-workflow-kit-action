@@ -33,6 +33,7 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
     const _getJobInfo = async (): Promise<JobInfo> => {
         for (let page = 0; true; page++) {
             let result
+            logger.info(`getting job info from github:`)
 
             try {
                 result = await octokit.rest.actions.listJobsForWorkflowRun({
@@ -44,8 +45,9 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
                 })
             } catch (error: any) {
                 result = undefined
+                logger.info(`Exception while gettin job info from github 1: ${  JSON.stringify(error)}`)
                 if (error instanceof RequestError) {
-                    logger.info(`Exception while gettin job info from github: ${  error.message}`)
+                    logger.info(`Exception while gettin job info from github 2: ${  error.message}`)
                     /**
                      * check whether error is Resource not accessible by integration or not
                      * if error status equals to 403 it might be 2 different error RateLimitError or ResourceNotAccessible
