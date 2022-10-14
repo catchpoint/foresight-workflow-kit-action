@@ -28,11 +28,11 @@
   "author": "Serkan Özal <serkan@thundra.io>",
   "license": "MIT",
   "dependencies": {
-    "@actions/core": "^1.9.1",
+    "@actions/core": "^1.10.0",
     "@actions/exec": "^1.1.0",
-    "@actions/github": "^5.0.3",
-    "@octokit/action": "^3.18.1",
-    "axios": "^0.27.2",
+    "@actions/github": "^5.1.1",
+    "@octokit/action": "^4.0.9",
+    "axios": "^1.1.2",
     "portfinder": "^1.0.28",
     "sprintf-js": "^1.1.2",
     "systeminformation": "^5.11.15"
@@ -42,8 +42,9 @@
     "@types/sprintf-js": "^1.1.2",
     "@typescript-eslint/parser": "^5.39.0",
     "@vercel/ncc": "^0.34.0",
-    "eslint": "^7.31.0",
+    "eslint": "^8.25.0",
     "eslint-plugin-github": "^4.1.1",
+    "eslint-plugin-jest": "^27.1.1",
     "js-yaml": "^4.1.0",
     "prettier": "2.7.1",
     "typescript": "^4.8.2"
