@@ -87962,9 +87962,8 @@ function getJobInfo(octokit) {
                 }
                 catch (error) {
                     result = undefined;
-                    logger.info(`Exception while gettin job info from github 1: ${JSON.stringify(error)}`);
                     if (error instanceof request_error_1.RequestError) {
-                        logger.info(`Exception while gettin job info from github 2: ${error.message}`);
+                        logger.info(`Exception while gettin job info from github: ${error.message}`);
                         /**
                          * check whether error is Resource not accessible by integration or not
                          * if error status equals to 403 it might be 2 different error RateLimitError or ResourceNotAccessible
@@ -88201,7 +88200,7 @@ function getMetaData() {
         runnerName: process.env.RUNNER_NAME,
         jobId: jobInfo.id,
         jobName: jobInfo.name,
-        createdAt: (new Date()).getTime(),
+        executionTime: (new Date()).getTime(),
     };
     return metaData;
 }

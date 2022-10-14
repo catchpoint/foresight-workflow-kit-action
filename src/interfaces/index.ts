@@ -13,7 +13,7 @@ export interface MetaData {
     readonly runnerName: string | undefined
     readonly jobId?: number | undefined
     readonly jobName?: string | undefined
-    readonly createdAt?: number | undefined
+    readonly executionTime?: number | undefined
 }
 
 export interface CITelemetryData {
