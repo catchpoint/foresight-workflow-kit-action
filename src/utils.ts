@@ -96,7 +96,7 @@ function getMetaData(): MetaData {
     runnerName: process.env.RUNNER_NAME,
     jobId: jobInfo.id,
     jobName: jobInfo.name,
-    executionTime: (new Date()).getTime(),
+    executionTime: new Date().getTime()
   }
   return metaData
 }
