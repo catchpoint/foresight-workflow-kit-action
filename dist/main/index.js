@@ -38608,7 +38608,7 @@ function getJobInfo(octokit) {
                 catch (error) {
                     result = undefined;
                     logger.info(`Exception occured while fetch job info from github: ${JSON.stringify(error)}`);
-                    logger.info(`error.constructor: ${JSON.stringify(error.constructor)}`);
+                    logger.info(`error.constructor: ${(error.constructor.name)}`);
                     if (error instanceof RequestError) {
                         logger.info(`Octokit error`);
                         /**

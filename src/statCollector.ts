@@ -49,7 +49,7 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
             error
           )}`
         )
-        logger.info(`error.constructor: ${JSON.stringify(error.constructor)}`)
+        logger.info(`error.constructor: ${(error.constructor.name)}`)
         if (error instanceof RequestError) {
           logger.info(`Octokit error`)
           /**
