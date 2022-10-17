@@ -4,7 +4,6 @@ import path from 'path'
 import axios from 'axios'
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/action'
-import { RequestError } from '@octokit/request-error'
 import * as github from '@actions/github'
 import { JobInfo } from './interfaces'
 import * as logger from './logger'
@@ -29,6 +28,7 @@ async function triggerStatCollect(port: number): Promise<void> {
 }
 
 export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
+  const { RequestError } = require('@octokit/request-error')
   const _getJobInfo = async (): Promise<JobInfo> => {
     for (let page = 0; true; page++) {
       let result
@@ -49,6 +49,7 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
             error
           )}`
         )
+        logger.info(`error.constructor: ${JSON.stringify(error.constructor)}`)
         if (error instanceof RequestError) {
           logger.info(`Octokit error`)
           /**

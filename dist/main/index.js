@@ -38573,7 +38573,6 @@ const path_1 = __importDefault(__nccwpck_require__(1017));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
 const core = __importStar(__nccwpck_require__(2186));
 const action_1 = __nccwpck_require__(1231);
-const request_error_1 = __nccwpck_require__(537);
 const github = __importStar(__nccwpck_require__(5438));
 const logger = __importStar(__nccwpck_require__(4636));
 const utils_1 = __nccwpck_require__(1314);
@@ -38591,6 +38590,7 @@ function triggerStatCollect(port) {
 }
 function getJobInfo(octokit) {
     return __awaiter(this, void 0, void 0, function* () {
+        const { RequestError } = __nccwpck_require__(537);
         const _getJobInfo = () => __awaiter(this, void 0, void 0, function* () {
             var _a;
             for (let page = 0; true; page++) {
@@ -38608,7 +38608,8 @@ function getJobInfo(octokit) {
                 catch (error) {
                     result = undefined;
                     logger.info(`Exception occured while fetch job info from github: ${JSON.stringify(error)}`);
-                    if (error instanceof request_error_1.RequestError) {
+                    logger.info(`error.constructor: ${JSON.stringify(error.constructor)}`);
+                    if (error instanceof RequestError) {
                         logger.info(`Octokit error`);
                         /**
                          * check whether error is Resource not accessible by integration or not
