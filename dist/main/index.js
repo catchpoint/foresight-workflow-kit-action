@@ -38567,6 +38567,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.sendMetricData = exports.handleJobInfo = exports.finish = exports.start = exports.getJobInfo = void 0;
+// eslint-disable-next-line filenames/match-regex
 const child_process_1 = __nccwpck_require__(2081);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
@@ -38594,7 +38595,7 @@ function getJobInfo(octokit) {
             var _a;
             for (let page = 0; true; page++) {
                 let result;
-                logger.info(`getting job info from github:`);
+                logger.info(`Get job info from github: ${repo.owner} ${repo.repo} ${runId}`);
                 try {
                     result = yield octokit.rest.actions.listJobsForWorkflowRun({
                         owner: repo.owner,
@@ -38606,8 +38607,9 @@ function getJobInfo(octokit) {
                 }
                 catch (error) {
                     result = undefined;
+                    logger.info(`Exception occured while fetch job info from github: ${JSON.stringify(error)}`);
                     if (error instanceof request_error_1.RequestError) {
-                        logger.info(`Exception occured while fetch job info from github: ${error.message}`);
+                        logger.info(`Octokit error`);
                         /**
                          * check whether error is Resource not accessible by integration or not
                          * if error status equals to 403 it might be 2 different error RateLimitError or ResourceNotAccessible
