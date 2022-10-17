@@ -1,19 +1,19 @@
 export interface JobInfo {
-    readonly id?: number | undefined
-    readonly name?: string | undefined
-    notAccessible?: boolean | false
+  readonly id?: number | undefined
+  readonly name?: string | undefined
+  notAccessible?: boolean | false
 }
 
 export interface MetaData {
-    readonly ciProvider: string
-    readonly runId: number
-    readonly repoName: string
-    readonly repoOwner: string
-    readonly runAttempt: string | undefined
-    readonly runnerName: string | undefined
-    readonly jobId?: number | undefined
-    readonly jobName?: string | undefined
-    readonly executionTime?: number | undefined
+  readonly ciProvider: string
+  readonly runId: number
+  readonly repoName: string
+  readonly repoOwner: string
+  readonly runAttempt: string | undefined
+  readonly runnerName: string | undefined
+  readonly jobId?: number | undefined
+  readonly jobName?: string | undefined
+  readonly executionTime?: number | undefined
 }
 
 export interface CITelemetryData {
