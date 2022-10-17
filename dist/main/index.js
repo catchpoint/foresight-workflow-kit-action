@@ -38611,7 +38611,11 @@ function getJobInfo(octokit) {
                      * if error status=403 and x-ratelimit-remaining = 0 error must be RateLimitError other
                      * else if status=403 and x-ratelimit-remaining != 0 we assume that error is ResourceNotAccessible
                      */
-                    if (((_a = error.response) === null || _a === void 0 ? void 0 : _a.headers['x-ratelimit-remaining']) !== '0' &&
+                    if (error &&
+                        error.response &&
+                        error.response.headers &&
+                        error.status &&
+                        ((_a = error.response) === null || _a === void 0 ? void 0 : _a.headers['x-ratelimit-remaining']) !== '0' &&
                         error.status === 403) {
                         logger.info(`Request Error: ${error.status} ${error.message}`);
                         return {

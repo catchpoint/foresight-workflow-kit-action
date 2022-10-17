@@ -4,7 +4,6 @@ import path from 'path'
 import axios from 'axios'
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/action'
-import { RequestError } from '@octokit/request-error'
 import * as github from '@actions/github'
 import { JobInfo } from './interfaces'
 import * as logger from './logger'
@@ -49,6 +48,10 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
          * else if status=403 and x-ratelimit-remaining != 0 we assume that error is ResourceNotAccessible
          */
         if (
+          error &&
+          error.response &&
+          error.response.headers &&
+          error.status &&
           error.response?.headers['x-ratelimit-remaining'] !== '0' &&
           error.status === 403
         ) {
