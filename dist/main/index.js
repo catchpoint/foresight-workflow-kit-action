@@ -38594,7 +38594,6 @@ function getJobInfo(octokit) {
             var _a;
             for (let page = 0; true; page++) {
                 let result;
-                logger.info(`Get job info from github: ${repo.owner} ${repo.repo} ${runId}`);
                 try {
                     result = yield octokit.rest.actions.listJobsForWorkflowRun({
                         owner: repo.owner,
@@ -38614,7 +38613,7 @@ function getJobInfo(octokit) {
                      */
                     if (((_a = error.response) === null || _a === void 0 ? void 0 : _a.headers['x-ratelimit-remaining']) !== '0' &&
                         error.status === 403) {
-                        logger.info(`Resource not accessible error.: ${error.message}`);
+                        logger.info(`Request Error: ${error.status} ${error.message}`);
                         return {
                             id: undefined,
                             name: undefined,
