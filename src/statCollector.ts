@@ -4,6 +4,7 @@ import path from 'path'
 import axios from 'axios'
 import * as core from '@actions/core'
 import { Octokit } from '@octokit/action'
+import { RequestError } from '@octokit/request-error'
 import * as github from '@actions/github'
 import { JobInfo } from './interfaces'
 import * as logger from './logger'
@@ -28,7 +29,6 @@ async function triggerStatCollect(port: number): Promise<void> {
 }
 
 export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
-  const { RequestError } = require('@octokit/request-error')
   const _getJobInfo = async (): Promise<JobInfo> => {
     for (let page = 0; true; page++) {
       let result
@@ -44,29 +44,21 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
         })
       } catch (error: any) {
         result = undefined
-        logger.info(
-          `Exception occured while fetch job info from github: ${JSON.stringify(
-            error
-          )}`
-        )
-        logger.info(`error.constructor: ${(error.constructor.name)}`)
-        if (error instanceof RequestError) {
-          logger.info(`Octokit error`)
-          /**
-           * check whether error is Resource not accessible by integration or not
-           * if error status equals to 403 it might be 2 different error RateLimitError or ResourceNotAccessible
-           * if error status=403 and x-ratelimit-remaining = 0 error must be RateLimitError other
-           * else if status=403 and x-ratelimit-remaining != 0 we assume that error is ResourceNotAccessible
-           */
-          if (
-            error.response?.headers['x-ratelimit-remaining'] !== '0' &&
-            error.status === 403
-          ) {
-            return {
-              id: undefined,
-              name: undefined,
-              notAccessible: true
-            }
+        /**
+         * check whether error is Resource not accessible by integration or not
+         * if error status equals to 403 it might be 2 different error RateLimitError or ResourceNotAccessible
+         * if error status=403 and x-ratelimit-remaining = 0 error must be RateLimitError other
+         * else if status=403 and x-ratelimit-remaining != 0 we assume that error is ResourceNotAccessible
+         */
+        if (
+          error.response?.headers['x-ratelimit-remaining'] !== '0' &&
+          error.status === 403
+        ) {
+          logger.info(`Resource not accessible error.: ${error.message}`)
+          return {
+            id: undefined,
+            name: undefined,
+            notAccessible: true
           }
         }
       }
