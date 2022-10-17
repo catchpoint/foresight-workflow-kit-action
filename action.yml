@@ -15,7 +15,7 @@ inputs:
     required: false
   trace_sys_procs:
     description: "Enables tracing default system processes ('aws', 'cat', 'sed', ...). Defaults to 'false'."
-    default: 'false'
+    default: "false"
     required: false
   stat_frequency:
     description: "Statistic collection frequency in seconds. Must be a number. Defaults to '5'."
@@ -23,7 +23,7 @@ inputs:
     required: false
 
 runs:
-  using: "node12"
+  using: "node16"
   main: dist/main/index.js
   post: dist/post/index.js
 branding:

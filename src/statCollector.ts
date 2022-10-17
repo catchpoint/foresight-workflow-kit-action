@@ -1,19 +1,16 @@
-import {ChildProcess, spawn} from 'child_process'
+import { ChildProcess, spawn } from 'child_process'
 import path from 'path'
 import axios from 'axios'
 import * as core from '@actions/core'
-import {Octokit} from '@octokit/action'
-import {RequestError} from '@octokit/request-error'
+import { Octokit } from '@octokit/action'
 import * as github from '@actions/github'
+import { JobInfo } from './interfaces'
+import * as logger from './logger'
 import {
-    JobInfo
-} from './interfaces';
-import * as logger from './logger';
-import {
-    createCITelemetryData,
-    saveJobInfos,
-    sendData,
-    WORKFLOW_TELEMETRY_ENDPOINTS
+  createCITelemetryData,
+  saveJobInfos,
+  sendData,
+  WORKFLOW_TELEMETRY_ENDPOINTS
 } from './utils'
 
 const PAGE_SIZE = 100
@@ -22,11 +19,11 @@ const {pull_request} = github.context.payload
 const {workflow, job, repo, runId, sha} = github.context
 
 async function triggerStatCollect(port: number): Promise<void> {
-    logger.info('Triggering stat collect ...')
-    const response = await axios.post(`http://localhost:${port}/collect`)
-    if (logger.isDebugEnabled()) {
-        logger.debug(`Triggered stat collect: ${JSON.stringify(response.data)}`)
-    }
+  logger.info('Triggering stat collect ...')
+  const response = await axios.post(`http://localhost:${port}/collect`)
+  if (logger.isDebugEnabled()) {
+    logger.debug(`Triggered stat collect: ${JSON.stringify(response.data)}`)
+  }
 }
 
 export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
@@ -122,19 +119,21 @@ export async function start(): Promise<void> {
             }
         }
 
-        const child: ChildProcess = spawn(
-            process.argv[0],
-            [path.join(__dirname, '../scw/index.js')],
-            {
-                detached: true,
-                stdio: 'ignore',
-                env: {
-                    ...process.env,
-                    WORKFLOW_TELEMETRY_STAT_FREQ: statFrequency ? `${statFrequency}` : undefined
-                }
-            }
-        )
-        child.unref()
+    const child: ChildProcess = spawn(
+      process.argv[0],
+      [path.join(__dirname, '../scw/index.js')],
+      {
+        detached: true,
+        stdio: 'ignore',
+        env: {
+          ...process.env,
+          WORKFLOW_TELEMETRY_STAT_FREQ: statFrequency
+            ? `${statFrequency}`
+            : undefined
+        }
+      }
+    )
+    child.unref()
 
         logger.info(`Started stat collector`)
     } catch (error: any) {
@@ -162,32 +161,31 @@ export async function handleJobInfo(): Promise<JobInfo | null> {
 
     logger.debug(`Workflow - Job: ${workflow} - ${job}`)
 
-    let commit: string = (pull_request && pull_request.head && pull_request.head.sha) || sha
-    logger.debug(`Commit: ${commit}`)
+  let commit: string =
+    (pull_request && pull_request.head && pull_request.head.sha) || sha
+  logger.debug(`Commit: ${commit}`)
 
-    const jobInfo: JobInfo = await getJobInfo(octokit)
-    if (!jobInfo) {
-        logger.error("Couldn't retrieved jobInfo");
-        return null;
-    }
-    logger.debug(`Job info: ${JSON.stringify(jobInfo)}`)
-    saveJobInfos(jobInfo);
-    return jobInfo;
+  const jobInfo: JobInfo = await getJobInfo(octokit)
+  if (!jobInfo) {
+    logger.error("Couldn't retrieved jobInfo")
+    return null
+  }
+  logger.debug(`Job info: ${JSON.stringify(jobInfo)}`)
+  saveJobInfos(jobInfo)
+  return jobInfo
 }
 
 export async function sendMetricData(port: number): Promise<void> {
-    logger.info(`Send stat collector result ...`)
-    try {
-        const response = await axios.get(
-            `http://localhost:${port}/metrics`
-        )
-        const ciTelemetryData = createCITelemetryData(response.data);
-        if (logger.isDebugEnabled()) {
-            logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`)
-        }
-        sendData(WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData);
-    } catch (error: any) {
-        logger.error('Unable to send stat collector result')
-        logger.error(error)
+  logger.info(`Send stat collector result ...`)
+  try {
+    const response = await axios.get(`http://localhost:${port}/metrics`)
+    const ciTelemetryData = createCITelemetryData(response.data)
+    if (logger.isDebugEnabled()) {
+      logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`)
     }
+    sendData(WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData)
+  } catch (error: any) {
+    logger.error('Unable to send stat collector result')
+    logger.error(error)
+  }
 }
