@@ -38602,7 +38602,6 @@ function triggerStatCollect(port) {
 function getJobInfo(octokit) {
     return __awaiter(this, void 0, void 0, function* () {
         const _getJobInfo = () => __awaiter(this, void 0, void 0, function* () {
-            var _a;
             for (let page = 0; true; page++) {
                 let result;
                 try {
@@ -38626,9 +38625,9 @@ function getJobInfo(octokit) {
                         error.response &&
                         error.response.headers &&
                         error.status &&
-                        ((_a = error.response) === null || _a === void 0 ? void 0 : _a.headers['x-ratelimit-remaining']) !== '0' &&
+                        error.response.headers['x-ratelimit-remaining'] !== '0' &&
                         error.status === 403) {
-                        logger.info(`Request Error: ${error.status} ${error.message}`);
+                        logger.debug(`Request Error: ${error.status} ${error.message}`);
                         return {
                             id: undefined,
                             name: undefined,

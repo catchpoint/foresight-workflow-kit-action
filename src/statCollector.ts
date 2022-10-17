@@ -52,10 +52,10 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
           error.response &&
           error.response.headers &&
           error.status &&
-          error.response?.headers['x-ratelimit-remaining'] !== '0' &&
+          error.response.headers['x-ratelimit-remaining'] !== '0' &&
           error.status === 403
         ) {
-          logger.info(`Request Error: ${error.status} ${error.message}`)
+          logger.debug(`Request Error: ${error.status} ${error.message}`)
           return {
             id: undefined,
             name: undefined,
