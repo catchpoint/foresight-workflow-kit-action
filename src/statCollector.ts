@@ -27,7 +27,9 @@ async function triggerStatCollect(port: number): Promise<void> {
   }
 }
 
-export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
+export async function getJobInfo(
+  octokit: Octokit
+): Promise<JobInfo | undefined> {
   const _getJobInfo = async (): Promise<JobInfo> => {
     for (let page = 0; true; page++) {
       let result
@@ -101,7 +103,7 @@ export async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
     }
     await new Promise(r => setTimeout(r, 1000))
   }
-  return {}
+  return undefined
 }
 
 ///////////////////////////
@@ -165,9 +167,9 @@ export async function handleJobInfo(): Promise<JobInfo | null> {
     (pull_request && pull_request.head && pull_request.head.sha) || sha
   logger.debug(`Commit: ${commit}`)
 
-  const jobInfo: JobInfo = await getJobInfo(octokit)
+  const jobInfo = await getJobInfo(octokit)
   if (!jobInfo) {
-    logger.error("Couldn't retrieved jobInfo")
+    logger.error(`Job info could not be retrieved from github!`)
     return null
   }
   logger.debug(`Job info: ${JSON.stringify(jobInfo)}`)

@@ -38656,7 +38656,7 @@ function getJobInfo(octokit) {
             }
             yield new Promise(r => setTimeout(r, 1000));
         }
-        return {};
+        return undefined;
     });
 }
 exports.getJobInfo = getJobInfo;
@@ -38713,7 +38713,7 @@ function handleJobInfo() {
         logger.debug(`Commit: ${commit}`);
         const jobInfo = yield getJobInfo(octokit);
         if (!jobInfo) {
-            logger.error("Couldn't retrieved jobInfo");
+            logger.error(`Job info could not be retrieved from github!`);
             return null;
         }
         logger.debug(`Job info: ${JSON.stringify(jobInfo)}`);
