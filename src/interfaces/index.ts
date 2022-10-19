@@ -1,6 +1,7 @@
 export interface JobInfo {
   readonly id?: number | undefined
   readonly name?: string | undefined
+  readonly notAccessible?: boolean | false
 }
 
 export interface MetaData {
@@ -12,6 +13,7 @@ export interface MetaData {
   readonly runnerName: string | undefined
   readonly jobId?: number | undefined
   readonly jobName?: string | undefined
+  readonly executionTime?: number | undefined
 }
 
 export interface CITelemetryData {

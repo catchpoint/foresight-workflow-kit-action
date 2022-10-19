@@ -95,7 +95,8 @@ function getMetaData(): MetaData {
     runAttempt: process.env.GITHUB_RUN_ATTEMPT,
     runnerName: process.env.RUNNER_NAME,
     jobId: jobInfo.id,
-    jobName: jobInfo.name
+    jobName: jobInfo.name,
+    executionTime: new Date().getTime()
   }
   return metaData
 }

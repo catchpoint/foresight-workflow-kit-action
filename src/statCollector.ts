@@ -1,3 +1,4 @@
+// eslint-disable-next-line filenames/match-regex
 import { ChildProcess, spawn } from 'child_process'
 import path from 'path'
 import axios from 'axios'
@@ -13,7 +14,7 @@ import {
   WORKFLOW_TELEMETRY_ENDPOINTS
 } from './utils'
 
-const PAGE_SIZE: number = 100
+const PAGE_SIZE = 100
 
 const { pull_request } = github.context.payload
 const { workflow, job, repo, runId, sha } = github.context
@@ -26,17 +27,49 @@ async function triggerStatCollect(port: number): Promise<void> {
   }
 }
 
-async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
+export async function getJobInfo(
+  octokit: Octokit
+): Promise<JobInfo | undefined> {
   const _getJobInfo = async (): Promise<JobInfo> => {
     for (let page = 0; true; page++) {
-      const result = await octokit.rest.actions.listJobsForWorkflowRun({
-        owner: repo.owner,
-        repo: repo.repo,
-        run_id: runId,
-        per_page: PAGE_SIZE,
-        page
-      })
+      let result
+      try {
+        result = await octokit.rest.actions.listJobsForWorkflowRun({
+          owner: repo.owner,
+          repo: repo.repo,
+          run_id: runId,
+          per_page: PAGE_SIZE,
+          page
+        })
+      } catch (error: any) {
+        result = undefined
+        /**
+         * check whether error is Resource not accessible by integration or not
+         * if error status equals to 403 it might be 2 different error RateLimitError or ResourceNotAccessible
+         * if error status=403 and x-ratelimit-remaining = 0 error must be RateLimitError other
+         * else if status=403 and x-ratelimit-remaining != 0 we assume that error is ResourceNotAccessible
+         */
+        if (
+          error &&
+          error.response &&
+          error.response.headers &&
+          error.status &&
+          error.response.headers['x-ratelimit-remaining'] !== '0' &&
+          error.status === 403
+        ) {
+          logger.debug(`Request Error: ${error.status} ${error.message}`)
+          return {
+            id: undefined,
+            name: undefined,
+            notAccessible: true
+          }
+        }
+      }
+      if (!result) {
+        break
+      }
       const jobs = result.data.jobs
+
       // If there are no jobs, stop here
       if (!jobs || !jobs.length) {
         break
@@ -62,12 +95,15 @@ async function getJobInfo(octokit: Octokit): Promise<JobInfo> {
   }
   for (let i = 0; i < 10; i++) {
     const currentJobInfo = await _getJobInfo()
-    if (currentJobInfo && currentJobInfo.id) {
+    if (
+      currentJobInfo &&
+      (currentJobInfo.id || currentJobInfo.notAccessible === true)
+    ) {
       return currentJobInfo
     }
     await new Promise(r => setTimeout(r, 1000))
   }
-  return {}
+  return undefined
 }
 
 ///////////////////////////
@@ -76,7 +112,7 @@ export async function start(): Promise<void> {
   logger.info(`Starting stat collector ...`)
 
   try {
-    let statFrequency: number = 0
+    let statFrequency = 0
     const statFrequencyInput: string = core.getInput('stat_frequency')
     if (statFrequencyInput) {
       const statFrequencyVal: number = parseInt(statFrequencyInput)
@@ -127,13 +163,13 @@ export async function handleJobInfo(): Promise<JobInfo | null> {
 
   logger.debug(`Workflow - Job: ${workflow} - ${job}`)
 
-  let commit: string =
+  const commit: string =
     (pull_request && pull_request.head && pull_request.head.sha) || sha
   logger.debug(`Commit: ${commit}`)
 
-  const jobInfo: JobInfo = await getJobInfo(octokit)
+  const jobInfo = await getJobInfo(octokit)
   if (!jobInfo) {
-    logger.error("Couldn't retrieved jobInfo")
+    logger.error(`Job info could not be retrieved from github!`)
     return null
   }
   logger.debug(`Job info: ${JSON.stringify(jobInfo)}`)
