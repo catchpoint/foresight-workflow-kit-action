@@ -38408,8 +38408,8 @@ const logger = __importStar(__nccwpck_require__(4636));
 const utils_1 = __nccwpck_require__(1314);
 const PROC_TRACER_PID_KEY = 'PROC_TRACER_PID';
 const PROC_TRACER_OUTPUT_FILE_NAME = 'proc-trace.out';
-const PROC_TRACER_BINARY_NAME_UBUNTU_20 = 'proc_tracer_ubuntu-20.04';
-const PROC_TRACER_BINARY_NAME_UBUNTU_22 = 'proc_tracer_ubuntu-22.04';
+const PROC_TRACER_BINARY_NAME_UBUNTU_20 = 'proc_tracer_ubuntu-20';
+const PROC_TRACER_BINARY_NAME_UBUNTU_22 = 'proc_tracer_ubuntu-22';
 let finished = false;
 function getProcessTracerBinaryName() {
     return __awaiter(this, void 0, void 0, function* () {

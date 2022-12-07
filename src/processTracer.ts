@@ -15,8 +15,8 @@ import {
 
 const PROC_TRACER_PID_KEY: string = 'PROC_TRACER_PID'
 const PROC_TRACER_OUTPUT_FILE_NAME: string = 'proc-trace.out'
-const PROC_TRACER_BINARY_NAME_UBUNTU_20: string = 'proc_tracer_ubuntu-20.04'
-const PROC_TRACER_BINARY_NAME_UBUNTU_22: string = 'proc_tracer_ubuntu-22.04'
+const PROC_TRACER_BINARY_NAME_UBUNTU_20: string = 'proc_tracer_ubuntu-20'
+const PROC_TRACER_BINARY_NAME_UBUNTU_22: string = 'proc_tracer_ubuntu-22'
 
 let finished: boolean = false
 
