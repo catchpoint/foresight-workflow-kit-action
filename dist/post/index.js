@@ -38398,6 +38398,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.report = exports.finish = exports.start = void 0;
+/* eslint-disable filenames/match-regex */
 const child_process_1 = __nccwpck_require__(2081);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(2186));
@@ -38407,7 +38408,8 @@ const logger = __importStar(__nccwpck_require__(4636));
 const utils_1 = __nccwpck_require__(1314);
 const PROC_TRACER_PID_KEY = 'PROC_TRACER_PID';
 const PROC_TRACER_OUTPUT_FILE_NAME = 'proc-trace.out';
-const PROC_TRACER_BINARY_NAME_UBUNTU_20 = 'proc-tracer_ubuntu_20';
+const PROC_TRACER_BINARY_NAME_UBUNTU_20 = 'proc_tracer_ubuntu-20';
+const PROC_TRACER_BINARY_NAME_UBUNTU_22 = 'proc_tracer_ubuntu-22';
 let finished = false;
 function getProcessTracerBinaryName() {
     return __awaiter(this, void 0, void 0, function* () {
@@ -38417,7 +38419,12 @@ function getProcessTracerBinaryName() {
             if (osInfo.distro === 'Ubuntu') {
                 const majorVersion = parseInt(osInfo.release.split('.')[0]);
                 if (majorVersion === 20) {
+                    logger.info(`Using ${PROC_TRACER_BINARY_NAME_UBUNTU_20}`);
                     return PROC_TRACER_BINARY_NAME_UBUNTU_20;
+                }
+                if (majorVersion === 22) {
+                    logger.info(`Using ${PROC_TRACER_BINARY_NAME_UBUNTU_22}`);
+                    return PROC_TRACER_BINARY_NAME_UBUNTU_22;
                 }
             }
         }

@@ -1,3 +1,4 @@
+/* eslint-disable filenames/match-regex */
 import { ChildProcess, spawn, exec } from 'child_process'
 import path from 'path'
 import * as core from '@actions/core'
@@ -14,7 +15,8 @@ import {
 
 const PROC_TRACER_PID_KEY: string = 'PROC_TRACER_PID'
 const PROC_TRACER_OUTPUT_FILE_NAME: string = 'proc-trace.out'
-const PROC_TRACER_BINARY_NAME_UBUNTU_20: string = 'proc-tracer_ubuntu_20'
+const PROC_TRACER_BINARY_NAME_UBUNTU_20: string = 'proc_tracer_ubuntu-20'
+const PROC_TRACER_BINARY_NAME_UBUNTU_22: string = 'proc_tracer_ubuntu-22'
 
 let finished: boolean = false
 
@@ -25,7 +27,13 @@ async function getProcessTracerBinaryName(): Promise<string | null> {
     if (osInfo.distro === 'Ubuntu') {
       const majorVersion: number = parseInt(osInfo.release.split('.')[0])
       if (majorVersion === 20) {
+        logger.info(`Using ${PROC_TRACER_BINARY_NAME_UBUNTU_20}`)
         return PROC_TRACER_BINARY_NAME_UBUNTU_20
+      }
+
+      if (majorVersion === 22) {
+        logger.info(`Using ${PROC_TRACER_BINARY_NAME_UBUNTU_22}`)
+        return PROC_TRACER_BINARY_NAME_UBUNTU_22
       }
     }
   }
