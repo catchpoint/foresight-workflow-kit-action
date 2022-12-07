@@ -24,7 +24,7 @@ async function getProcessTracerBinaryName(): Promise<string | null> {
     // Check whether we are running on Ubuntu
     if (osInfo.distro === 'Ubuntu') {
       const majorVersion: number = parseInt(osInfo.release.split('.')[0])
-      if (majorVersion === 20) {
+      if (majorVersion === 20 || majorVersion === 22) {
         return PROC_TRACER_BINARY_NAME_UBUNTU_20
       }
     }
