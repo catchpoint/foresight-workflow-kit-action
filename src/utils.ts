@@ -87,7 +87,6 @@ function getJobInfo(): JobInfo {
 function getMetaData(executionTime: number): MetaData {
   const { repo, runId } = github.context
   const jobInfo = getJobInfo()
-  logger.info(`currentDate on getMetadata : ${new Date().getTime()}`)
   const metaData: MetaData = {
     ciProvider: 'GITHUB',
     runId,

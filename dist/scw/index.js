@@ -35568,7 +35568,6 @@ function getJobInfo() {
 function getMetaData(executionTime) {
     const { repo, runId } = github.context;
     const jobInfo = getJobInfo();
-    logger.info(`currentDate on getMetadata : ${new Date().getTime()}`);
     const metaData = {
         ciProvider: 'GITHUB',
         runId,

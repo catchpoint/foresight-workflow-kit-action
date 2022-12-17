@@ -38474,7 +38474,7 @@ function finish() {
     });
 }
 exports.finish = finish;
-function report(executionTime) {
+function report(actionStartTime) {
     return __awaiter(this, void 0, void 0, function* () {
         logger.info(`Reporting process tracer result ...`);
         if (!finished) {
@@ -38502,7 +38502,7 @@ function report(executionTime) {
                 version: utils_1.WORKFLOW_TELEMETRY_VERSIONS.PROCESS,
                 data: completedCommands
             };
-            yield sendProcessData(processInfos, executionTime);
+            yield sendProcessData(processInfos, actionStartTime);
             logger.info(`Reported process tracer result`);
         }
         catch (error) {
@@ -38512,11 +38512,11 @@ function report(executionTime) {
     });
 }
 exports.report = report;
-function sendProcessData(processInfos, executionTime) {
+function sendProcessData(processInfos, actionStartTime) {
     return __awaiter(this, void 0, void 0, function* () {
         logger.info(`Send process result ...`);
         try {
-            const ciTelemetryData = (0, utils_1.createCITelemetryData)(processInfos, executionTime);
+            const ciTelemetryData = (0, utils_1.createCITelemetryData)(processInfos, actionStartTime);
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent process data: ${JSON.stringify(ciTelemetryData)}`);
             }
@@ -38729,13 +38729,12 @@ function handleJobInfo() {
     });
 }
 exports.handleJobInfo = handleJobInfo;
-function sendMetricData(port, executionTime) {
+function sendMetricData(port, actionStartTime) {
     return __awaiter(this, void 0, void 0, function* () {
         logger.info(`Send stat collector result ...`);
         try {
             const response = yield axios_1.default.get(`http://localhost:${port}/metrics`);
-            const ciTelemetryData = (0, utils_1.createCITelemetryData)(response.data, executionTime);
-            logger.info(`ciTelemetry metaData : ${JSON.stringify(ciTelemetryData)}`);
+            const ciTelemetryData = (0, utils_1.createCITelemetryData)(response.data, actionStartTime);
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`);
             }
@@ -38847,7 +38846,6 @@ function getJobInfo() {
 function getMetaData(executionTime) {
     const { repo, runId } = github.context;
     const jobInfo = getJobInfo();
-    logger.info(`currentDate on getMetadata : ${new Date().getTime()}`);
     const metaData = {
         ciProvider: 'GITHUB',
         runId,
