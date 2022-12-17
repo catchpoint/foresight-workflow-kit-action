@@ -38474,7 +38474,7 @@ function finish() {
     });
 }
 exports.finish = finish;
-function report() {
+function report(executionTime) {
     return __awaiter(this, void 0, void 0, function* () {
         logger.info(`Reporting process tracer result ...`);
         if (!finished) {
@@ -38502,7 +38502,7 @@ function report() {
                 version: utils_1.WORKFLOW_TELEMETRY_VERSIONS.PROCESS,
                 data: completedCommands
             };
-            yield sendProcessData(processInfos);
+            yield sendProcessData(processInfos, executionTime);
             logger.info(`Reported process tracer result`);
         }
         catch (error) {
@@ -38512,11 +38512,11 @@ function report() {
     });
 }
 exports.report = report;
-function sendProcessData(processInfos) {
+function sendProcessData(processInfos, executionTime) {
     return __awaiter(this, void 0, void 0, function* () {
         logger.info(`Send process result ...`);
         try {
-            const ciTelemetryData = (0, utils_1.createCITelemetryData)(processInfos);
+            const ciTelemetryData = (0, utils_1.createCITelemetryData)(processInfos, executionTime);
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent process data: ${JSON.stringify(ciTelemetryData)}`);
             }
@@ -38729,12 +38729,12 @@ function handleJobInfo() {
     });
 }
 exports.handleJobInfo = handleJobInfo;
-function sendMetricData(port) {
+function sendMetricData(port, executionTime) {
     return __awaiter(this, void 0, void 0, function* () {
         logger.info(`Send stat collector result ...`);
         try {
             const response = yield axios_1.default.get(`http://localhost:${port}/metrics`);
-            const ciTelemetryData = (0, utils_1.createCITelemetryData)(response.data);
+            const ciTelemetryData = (0, utils_1.createCITelemetryData)(response.data, executionTime);
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`);
             }
@@ -38843,26 +38843,27 @@ function getJobInfo() {
     };
     return jobInfo;
 }
-function getMetaData() {
+function getMetaData(executionTime) {
     const { repo, runId } = github.context;
     const jobInfo = getJobInfo();
+    logger.info(`currentDate on getMetadata : ${new Date().getTime()}`);
     const metaData = {
         ciProvider: 'GITHUB',
-        runId: runId,
+        runId,
         repoName: repo.repo,
         repoOwner: repo.owner,
         runAttempt: process.env.GITHUB_RUN_ATTEMPT,
         runnerName: process.env.RUNNER_NAME,
         jobId: jobInfo.id,
         jobName: jobInfo.name,
-        executionTime: new Date().getTime()
+        executionTime
     };
     return metaData;
 }
-function createCITelemetryData(telemetryData) {
+function createCITelemetryData(telemetryData, executionTime) {
     return {
-        metaData: getMetaData(),
-        telemetryData: telemetryData
+        metaData: getMetaData(executionTime),
+        telemetryData
     };
 }
 exports.createCITelemetryData = createCITelemetryData;
@@ -38901,13 +38902,13 @@ function getApiKey() {
         const apiKey = core.getInput('api_key');
         if (apiKey) {
             logger.debug(`ApiKey: ${apiKey}`);
-            return { apiKey: apiKey };
+            return { apiKey };
         }
         else {
             logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
             const { repo, runId } = github.context;
             const onDemandAPIKeyParam = {
-                repoFullName: repo.owner + '/' + repo.repo,
+                repoFullName: `${repo.owner}/${repo.repo}`,
                 workflowRunId: runId
             };
             logger.debug(`On demand api key request params: ${JSON.stringify(onDemandAPIKeyParam, null, 4)} `);
