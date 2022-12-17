@@ -38735,7 +38735,7 @@ function sendMetricData(port, executionTime) {
         try {
             const response = yield axios_1.default.get(`http://localhost:${port}/metrics`);
             const ciTelemetryData = (0, utils_1.createCITelemetryData)(response.data, executionTime);
-            logger.info(`ciTelemetry metaData : ${ciTelemetryData.metaData}`);
+            logger.info(`ciTelemetry metaData : ${JSON.stringify(ciTelemetryData)}`);
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`);
             }

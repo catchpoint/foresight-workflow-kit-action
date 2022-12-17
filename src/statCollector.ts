@@ -185,7 +185,7 @@ export async function sendMetricData(
   try {
     const response = await axios.get(`http://localhost:${port}/metrics`)
     const ciTelemetryData = createCITelemetryData(response.data, executionTime)
-    logger.info(`ciTelemetry metaData : ${ciTelemetryData.metaData}`)
+    logger.info(`ciTelemetry metaData : ${JSON.stringify(ciTelemetryData)}`)
     if (logger.isDebugEnabled()) {
       logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`)
     }
