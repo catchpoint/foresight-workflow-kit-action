@@ -8,6 +8,9 @@ import { WORKFLOW_TELEMETRY_SERVER_PORT } from './utils'
 async function run(): Promise<void> {
   try {
     logger.info(`Finishing ...`)
+    const executionTime = new Date().getTime()
+    logger.info(`executionTime : ${executionTime}`)
+
     const port = parseInt(core.getState(WORKFLOW_TELEMETRY_SERVER_PORT))
     logger.info(`SERVER_PORT: ${port}`)
     // Finish stat collector
@@ -20,9 +23,9 @@ async function run(): Promise<void> {
     if (!jobInfo) {
       return
     }
-    await statCollector.sendMetricData(port)
+    await statCollector.sendMetricData(port, executionTime)
     // Report process tracer
-    await processTracer.report()
+    await processTracer.report(executionTime)
 
     logger.info(`Finish completed`)
   } catch (error: any) {
