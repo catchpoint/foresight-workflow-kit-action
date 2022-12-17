@@ -103,10 +103,10 @@ function getMetaData(executionTime: number): MetaData {
 
 export function createCITelemetryData(
   telemetryData: ProcessTelemetryDatum,
-  executionTime: number
+  actionStartTime: number
 ): CITelemetryData {
   return {
-    metaData: getMetaData(executionTime),
+    metaData: getMetaData(actionStartTime),
     telemetryData
   }
 }

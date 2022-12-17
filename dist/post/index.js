@@ -38871,9 +38871,9 @@ function getMetaData(executionTime) {
     };
     return metaData;
 }
-function createCITelemetryData(telemetryData, executionTime) {
+function createCITelemetryData(telemetryData, actionStartTime) {
     return {
-        metaData: getMetaData(executionTime),
+        metaData: getMetaData(actionStartTime),
         telemetryData
     };
 }
