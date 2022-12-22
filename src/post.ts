@@ -7,7 +7,7 @@ import { WORKFLOW_TELEMETRY_SERVER_PORT } from './utils'
 
 async function run(): Promise<void> {
   try {
-    const actionStartTime = new Date().getTime()
+    const actionStartTime = Math.floor(Date.now() / 1000) * 1000
     logger.info(`Finishing ...`)
     const port = parseInt(core.getState(WORKFLOW_TELEMETRY_SERVER_PORT))
     logger.info(`SERVER_PORT: ${port}`)
