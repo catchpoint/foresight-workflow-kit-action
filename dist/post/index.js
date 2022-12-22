@@ -38147,10 +38147,8 @@ const utils_1 = __nccwpck_require__(1314);
 function run() {
     return __awaiter(this, void 0, void 0, function* () {
         try {
-            logger.info(`actionStartTime: ${new Date().getTime()}`);
             const actionStartTime = Math.floor(Date.now() / 1000) * 1000;
             logger.info(`Finishing ...`);
-            logger.info(`actionStartTime rounded: ${actionStartTime}`);
             const port = parseInt(core.getState(utils_1.WORKFLOW_TELEMETRY_SERVER_PORT));
             logger.info(`SERVER_PORT: ${port}`);
             // Finish stat collector
