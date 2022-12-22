@@ -9,6 +9,7 @@ async function run(): Promise<void> {
   try {
     const actionStartTime = Math.floor(Date.now() / 1000) * 1000
     logger.info(`Finishing ...`)
+    logger.info(`actionStartTime: ${actionStartTime}`)
     const port = parseInt(core.getState(WORKFLOW_TELEMETRY_SERVER_PORT))
     logger.info(`SERVER_PORT: ${port}`)
     // Finish stat collector
