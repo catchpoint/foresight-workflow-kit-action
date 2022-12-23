@@ -177,11 +177,17 @@ export async function handleJobInfo(): Promise<JobInfo | null> {
   return jobInfo
 }
 
-export async function sendMetricData(port: number): Promise<void> {
+export async function sendMetricData(
+  port: number,
+  actionStartTime: number
+): Promise<void> {
   logger.info(`Send stat collector result ...`)
   try {
     const response = await axios.get(`http://localhost:${port}/metrics`)
-    const ciTelemetryData = createCITelemetryData(response.data)
+    const ciTelemetryData = createCITelemetryData(
+      response.data,
+      actionStartTime
+    )
     if (logger.isDebugEnabled()) {
       logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`)
     }

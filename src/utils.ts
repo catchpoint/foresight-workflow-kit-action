@@ -84,29 +84,30 @@ function getJobInfo(): JobInfo {
   return jobInfo
 }
 
-function getMetaData(): MetaData {
+function getMetaData(executionTime: number): MetaData {
   const { repo, runId } = github.context
   const jobInfo = getJobInfo()
   const metaData: MetaData = {
     ciProvider: 'GITHUB',
-    runId: runId,
+    runId,
     repoName: repo.repo,
     repoOwner: repo.owner,
     runAttempt: process.env.GITHUB_RUN_ATTEMPT,
     runnerName: process.env.RUNNER_NAME,
     jobId: jobInfo.id,
     jobName: jobInfo.name,
-    executionTime: new Date().getTime()
+    executionTime
   }
   return metaData
 }
 
 export function createCITelemetryData(
-  telemetryData: ProcessTelemetryDatum
+  telemetryData: ProcessTelemetryDatum,
+  actionStartTime: number
 ): CITelemetryData {
   return {
-    metaData: getMetaData(),
-    telemetryData: telemetryData
+    metaData: getMetaData(actionStartTime),
+    telemetryData
   }
 }
 
@@ -141,12 +142,12 @@ async function getApiKey(): Promise<ApiKeyInfo | null> {
   const apiKey: string = core.getInput('api_key')
   if (apiKey) {
     logger.debug(`ApiKey: ${apiKey}`)
-    return { apiKey: apiKey }
+    return { apiKey }
   } else {
     logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`)
     const { repo, runId } = github.context
     const onDemandAPIKeyParam: OnDemandAPIKeyParam = {
-      repoFullName: repo.owner + '/' + repo.repo,
+      repoFullName: `${repo.owner}/${repo.repo}`,
       workflowRunId: runId
     }
     logger.debug(

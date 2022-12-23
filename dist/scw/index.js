@@ -35565,26 +35565,26 @@ function getJobInfo() {
     };
     return jobInfo;
 }
-function getMetaData() {
+function getMetaData(executionTime) {
     const { repo, runId } = github.context;
     const jobInfo = getJobInfo();
     const metaData = {
         ciProvider: 'GITHUB',
-        runId: runId,
+        runId,
         repoName: repo.repo,
         repoOwner: repo.owner,
         runAttempt: process.env.GITHUB_RUN_ATTEMPT,
         runnerName: process.env.RUNNER_NAME,
         jobId: jobInfo.id,
         jobName: jobInfo.name,
-        executionTime: new Date().getTime()
+        executionTime
     };
     return metaData;
 }
-function createCITelemetryData(telemetryData) {
+function createCITelemetryData(telemetryData, actionStartTime) {
     return {
-        metaData: getMetaData(),
-        telemetryData: telemetryData
+        metaData: getMetaData(actionStartTime),
+        telemetryData
     };
 }
 exports.createCITelemetryData = createCITelemetryData;
@@ -35623,13 +35623,13 @@ function getApiKey() {
         const apiKey = core.getInput('api_key');
         if (apiKey) {
             logger.debug(`ApiKey: ${apiKey}`);
-            return { apiKey: apiKey };
+            return { apiKey };
         }
         else {
             logger.debug(`ApiKey is not defined! Requesting on demand ApiKey`);
             const { repo, runId } = github.context;
             const onDemandAPIKeyParam = {
-                repoFullName: repo.owner + '/' + repo.repo,
+                repoFullName: `${repo.owner}/${repo.repo}`,
                 workflowRunId: runId
             };
             logger.debug(`On demand api key request params: ${JSON.stringify(onDemandAPIKeyParam, null, 4)} `);

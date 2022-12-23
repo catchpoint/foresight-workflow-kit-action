@@ -115,7 +115,7 @@ export async function finish(): Promise<void> {
   }
 }
 
-export async function report(): Promise<void> {
+export async function report(actionStartTime: number): Promise<void> {
   logger.info(`Reporting process tracer result ...`)
 
   if (!finished) {
@@ -160,7 +160,7 @@ export async function report(): Promise<void> {
       data: completedCommands
     }
 
-    await sendProcessData(processInfos)
+    await sendProcessData(processInfos, actionStartTime)
 
     logger.info(`Reported process tracer result`)
   } catch (error: any) {
@@ -170,11 +170,12 @@ export async function report(): Promise<void> {
 }
 
 async function sendProcessData(
-  processInfos: ProcessTelemetryDatum
+  processInfos: ProcessTelemetryDatum,
+  actionStartTime: number
 ): Promise<void> {
   logger.info(`Send process result ...`)
   try {
-    const ciTelemetryData = createCITelemetryData(processInfos)
+    const ciTelemetryData = createCITelemetryData(processInfos, actionStartTime)
     if (logger.isDebugEnabled()) {
       logger.debug(`Sent process data: ${JSON.stringify(ciTelemetryData)}`)
     }
