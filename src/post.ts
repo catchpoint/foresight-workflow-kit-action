@@ -16,11 +16,9 @@ async function run(): Promise<void> {
     // Finish process tracer
     await processTracer.finish()
 
-    // Report stat collector
-    const jobInfo: JobInfo | null = await statCollector.handleJobInfo()
-    if (!jobInfo) {
-      return
-    }
+    await statCollector.handleJobInfo()
+
+    // Report metric data
     await statCollector.sendMetricData(port, actionStartTime)
     // Report process tracer
     await processTracer.report(actionStartTime)

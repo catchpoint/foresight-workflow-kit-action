@@ -38155,11 +38155,8 @@ function run() {
             yield statCollector.finish(port);
             // Finish process tracer
             yield processTracer.finish();
-            // Report stat collector
-            const jobInfo = yield statCollector.handleJobInfo();
-            if (!jobInfo) {
-                return;
-            }
+            yield statCollector.handleJobInfo();
+            // Report metric data
             yield statCollector.sendMetricData(port, actionStartTime);
             // Report process tracer
             yield processTracer.report(actionStartTime);
