@@ -98,3 +98,7 @@ Thumbs.db
 __tests__/runner/*
 lib/**/*
 /.idea/
+dist/proc-tracer/proc-trace.out
+proc_tracer_error
+proc_tracer_out
+.vscode
