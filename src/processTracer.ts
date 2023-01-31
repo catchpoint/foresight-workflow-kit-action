@@ -1,8 +1,10 @@
 /* eslint-disable filenames/match-regex */
 import { ChildProcess, spawn, exec } from 'child_process'
+import fs from 'fs'
 import path from 'path'
 import * as core from '@actions/core'
 import si from 'systeminformation'
+import isRunning from 'is-running'
 import { parse } from './procTraceParser'
 import { CompletedCommand, ProcessTelemetryDatum } from './interfaces'
 import * as logger from './logger'
@@ -62,7 +64,7 @@ export async function start(): Promise<void> {
         PROC_TRACER_OUTPUT_FILE_NAME
       )
       const child: ChildProcess = spawn(
-        'sudo',
+        path.join(__dirname, '../proc-tracer/run.sh'),
         [
           path.join(__dirname, `../proc-tracer/${procTracerBinaryName}`),
           '-f',
@@ -80,7 +82,26 @@ export async function start(): Promise<void> {
       )
       child.unref()
 
-      core.saveState(PROC_TRACER_PID_KEY, child.pid?.toString())
+      // Wait 1 second before checking whether process is up and running
+      await new Promise(r => setTimeout(r, 1000))
+
+      if (!child.pid || !isRunning(child.pid)) {
+        logger.error(`Unable to start process tracer`)
+        const errorLogs: string = fs.readFileSync('proc_tracer_error', {
+          encoding: 'utf8',
+          flag: 'r'
+        })
+        if (errorLogs) {
+          errorLogs.split('\n').forEach((errorLog: string) => {
+            if (errorLog.length) {
+              logger.info(errorLog)
+            }
+          })
+        }
+        return
+      }
+
+      core.saveState(PROC_TRACER_PID_KEY, child.pid.toString())
 
       logger.info(`Started process tracer`)
     }

@@ -15850,6 +15850,25 @@ exports.isPlainObject = isPlainObject;
 
 /***/ }),
 
+/***/ 7544:
+/***/ ((module) => {
+
+module.exports = function (pid) {
+  if (module.exports.stub !== module.exports) {
+      return module.exports.stub.apply(this, arguments);
+  }
+  try {
+    return process.kill(pid,0)
+  }
+  catch (e) {
+    return e.code === 'EPERM'
+  }
+}
+module.exports.stub = module.exports;
+
+
+/***/ }),
+
 /***/ 7426:
 /***/ ((module, __unused_webpack_exports, __nccwpck_require__) => {
 
@@ -38401,9 +38420,11 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.report = exports.finish = exports.start = void 0;
 /* eslint-disable filenames/match-regex */
 const child_process_1 = __nccwpck_require__(2081);
+const fs_1 = __importDefault(__nccwpck_require__(7147));
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const core = __importStar(__nccwpck_require__(2186));
 const systeminformation_1 = __importDefault(__nccwpck_require__(9284));
+const is_running_1 = __importDefault(__nccwpck_require__(7544));
 const procTraceParser_1 = __nccwpck_require__(9576);
 const logger = __importStar(__nccwpck_require__(4636));
 const utils_1 = __nccwpck_require__(1314);
@@ -38435,14 +38456,13 @@ function getProcessTracerBinaryName() {
 }
 ///////////////////////////
 function start() {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         logger.info(`Starting process tracer ...`);
         try {
             const procTracerBinaryName = yield getProcessTracerBinaryName();
             if (procTracerBinaryName) {
                 const procTraceOutFilePath = path_1.default.join(__dirname, '../proc-tracer', PROC_TRACER_OUTPUT_FILE_NAME);
-                const child = (0, child_process_1.spawn)('sudo', [
+                const child = (0, child_process_1.spawn)(path_1.default.join(__dirname, '../proc-tracer/run.sh'), [
                     path_1.default.join(__dirname, `../proc-tracer/${procTracerBinaryName}`),
                     '-f',
                     'json',
@@ -38454,7 +38474,24 @@ function start() {
                     env: Object.assign({}, process.env)
                 });
                 child.unref();
-                core.saveState(PROC_TRACER_PID_KEY, (_a = child.pid) === null || _a === void 0 ? void 0 : _a.toString());
+                // Wait 1 second before checking whether process is up and running
+                yield new Promise(r => setTimeout(r, 1000));
+                if (!child.pid || !(0, is_running_1.default)(child.pid)) {
+                    logger.error(`Unable to start process tracer`);
+                    const errorLogs = fs_1.default.readFileSync('proc_tracer_error', {
+                        encoding: 'utf8',
+                        flag: 'r'
+                    });
+                    if (errorLogs) {
+                        errorLogs.split('\n').forEach((errorLog) => {
+                            if (errorLog.length) {
+                                logger.info(errorLog);
+                            }
+                        });
+                    }
+                    return;
+                }
+                core.saveState(PROC_TRACER_PID_KEY, child.pid.toString());
                 logger.info(`Started process tracer`);
             }
         }
