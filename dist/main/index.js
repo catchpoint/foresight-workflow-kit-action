@@ -38557,7 +38557,7 @@ function sendProcessData(processInfos, actionStartTime) {
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent process data: ${JSON.stringify(ciTelemetryData)}`);
             }
-            (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData);
+            yield (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData);
         }
         catch (error) {
             logger.error('Unable to send process result');
@@ -38612,6 +38612,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.sendMetricData = exports.handleJobInfo = exports.finish = exports.start = exports.getJobInfo = void 0;
 // eslint-disable-next-line filenames/match-regex
+const https_1 = __importDefault(__nccwpck_require__(5687));
 const child_process_1 = __nccwpck_require__(2081);
 const path_1 = __importDefault(__nccwpck_require__(1017));
 const axios_1 = __importDefault(__nccwpck_require__(8757));
@@ -38621,6 +38622,7 @@ const github = __importStar(__nccwpck_require__(5438));
 const logger = __importStar(__nccwpck_require__(4636));
 const utils_1 = __nccwpck_require__(1314);
 const PAGE_SIZE = 100;
+const DEFAULT_GITHUB_API_URL = 'https://api.github.com';
 const { pull_request } = github.context.payload;
 const { workflow, job, repo, runId, sha } = github.context;
 function triggerStatCollect(port) {
@@ -38647,6 +38649,7 @@ function getJobInfo(octokit) {
                     });
                 }
                 catch (error) {
+                    logger.debug(`Request Error: status=${error.status}, message=${error.message}`);
                     result = undefined;
                     /**
                      * check whether error is Resource not accessible by integration or not
@@ -38660,7 +38663,6 @@ function getJobInfo(octokit) {
                         error.status &&
                         error.response.headers['x-ratelimit-remaining'] !== '0' &&
                         error.status === 403) {
-                        logger.debug(`Request Error: ${error.status} ${error.message}`);
                         return {
                             id: undefined,
                             name: undefined,
@@ -38751,7 +38753,16 @@ function finish(port) {
 exports.finish = finish;
 function handleJobInfo() {
     return __awaiter(this, void 0, void 0, function* () {
-        const octokit = new action_1.Octokit();
+        const apiURL = process.env.GITHUB_API_URL || DEFAULT_GITHUB_API_URL;
+        // Disable certificate check for self-hosted Github environments
+        const rejectUnauthorized = apiURL === DEFAULT_GITHUB_API_URL;
+        const customAgent = new https_1.default.Agent({ rejectUnauthorized });
+        const octokit = new action_1.Octokit({
+            baseUrl: apiURL,
+            request: {
+                agent: customAgent
+            }
+        });
         logger.debug(`Workflow - Job: ${workflow} - ${job}`);
         const commit = (pull_request && pull_request.head && pull_request.head.sha) || sha;
         logger.debug(`Commit: ${commit}`);
@@ -38775,7 +38786,7 @@ function sendMetricData(port, actionStartTime) {
             if (logger.isDebugEnabled()) {
                 logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`);
             }
-            (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData);
+            yield (0, utils_1.sendData)(utils_1.WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData);
         }
         catch (error) {
             logger.error('Unable to send stat collector result');
