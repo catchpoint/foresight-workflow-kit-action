@@ -1,4 +1,5 @@
 // eslint-disable-next-line filenames/match-regex
+import https from 'https'
 import { ChildProcess, spawn } from 'child_process'
 import path from 'path'
 import axios from 'axios'
@@ -15,6 +16,7 @@ import {
 } from './utils'
 
 const PAGE_SIZE = 100
+const DEFAULT_GITHUB_API_URL = 'https://api.github.com'
 
 const { pull_request } = github.context.payload
 const { workflow, job, repo, runId, sha } = github.context
@@ -42,6 +44,9 @@ export async function getJobInfo(
           page
         })
       } catch (error: any) {
+        logger.debug(
+          `Request Error: status=${error.status}, message=${error.message}`
+        )
         result = undefined
         /**
          * check whether error is Resource not accessible by integration or not
@@ -57,7 +62,6 @@ export async function getJobInfo(
           error.response.headers['x-ratelimit-remaining'] !== '0' &&
           error.status === 403
         ) {
-          logger.debug(`Request Error: ${error.status} ${error.message}`)
           return {
             id: undefined,
             name: undefined,
@@ -159,7 +163,16 @@ export async function finish(port: number): Promise<void> {
 }
 
 export async function handleJobInfo(): Promise<JobInfo | null> {
-  const octokit: Octokit = new Octokit()
+  const apiURL: string = process.env.GITHUB_API_URL || DEFAULT_GITHUB_API_URL
+  // Disable certificate check for self-hosted Github environments
+  const rejectUnauthorized = apiURL === DEFAULT_GITHUB_API_URL
+  const customAgent: https.Agent = new https.Agent({ rejectUnauthorized })
+  const octokit: Octokit = new Octokit({
+    baseUrl: apiURL,
+    request: {
+      agent: customAgent
+    }
+  })
 
   logger.debug(`Workflow - Job: ${workflow} - ${job}`)
 
@@ -191,7 +204,7 @@ export async function sendMetricData(
     if (logger.isDebugEnabled()) {
       logger.debug(`Sent stat data: ${JSON.stringify(ciTelemetryData)}`)
     }
-    sendData(WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData)
+    await sendData(WORKFLOW_TELEMETRY_ENDPOINTS.METRIC, ciTelemetryData)
   } catch (error: any) {
     logger.error('Unable to send stat collector result')
     logger.error(error)

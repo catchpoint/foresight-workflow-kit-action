@@ -200,7 +200,7 @@ async function sendProcessData(
     if (logger.isDebugEnabled()) {
       logger.debug(`Sent process data: ${JSON.stringify(ciTelemetryData)}`)
     }
-    sendData(WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData)
+    await sendData(WORKFLOW_TELEMETRY_ENDPOINTS.PROCESS, ciTelemetryData)
   } catch (error: any) {
     logger.error('Unable to send process result')
     logger.error(error)
