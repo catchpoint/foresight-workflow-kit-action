@@ -1,4 +1,4 @@
-name: build-workflow-kit
+name: Build workflow-kit
 
 on:
   pull_request:
